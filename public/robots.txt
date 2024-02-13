@@ -1,0 +1,8 @@
+Sitemap: https://predictmarket.xyz/sitemap.xml
+
+User-agent: *
+Allow: /*
+
+Disallow: /_next/*
+Disallow: /api/*
+Disallow: /settings/*

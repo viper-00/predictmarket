@@ -1,0 +1,54 @@
+{
+  "name": "predictmarket",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "",
+  "scripts": {
+    "format": "prettier . \"**/*.+(js|ts|json)\" --write --ignore-path .gitignore",
+    "format:check": "prettier \"**/*.+(js|ts|json)\" --check --ignore-path .gitignore",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test:e2e": "start-server-and-test dev http://localhost:3000 test:cypress",
+    "test:cypress": "cypress run --browser chrome --headless"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/react": "^2.8.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@uniswap/conedison": "^1.8.0",
+    "@uniswap/widgets": "^2.59.0",
+    "@web3-react/walletconnect": "^8.2.3",
+    "@web3uikit/core": "^1.1.5",
+    "@web3uikit/icons": "^1.1.2",
+    "ethers": "^6.8.1",
+    "framer-motion": "^10.16.4",
+    "next": "14.0.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "wagmi": "^1.4.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "axios": "^1.6.2",
+    "cypress": "^13.4.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.1",
+    "postcss": "^8",
+    "prettier": "^3.0.3",
+    "qrcode.react": "^3.1.0",
+    "react-icons": "^4.11.0",
+    "start-server-and-test": "^2.0.1",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5",
+    "zustand": "^4.4.7"
+  },
+  "engines": {
+    "node": "^16.0.0 || ^18.0.0 || >=20.0.0"
+  }
+}
