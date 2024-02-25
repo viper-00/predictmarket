@@ -1,3 +1,19 @@
+// chainId
+export const CHAINIDS = {
+  ETH_MAINNET: 1,
+  ETH_GOERLI: 5,
+  ETH_SEPOLIA: 11155111,
+  OP_MAINNET: 10,
+  OP_GOERLI: 420,
+  OP_SEPOLIA: 11155420,
+  BSC_MAINNET: 56,
+  BSC_TESTNET: 97,
+  ARBITRUM_ONE: 42161,
+  ARBITRUM_NOVA: 42170,
+  ARBITRUM_GOERLI: 421613,
+  ARBITRUM_SEPOLIA: 421614,
+};
+
 export const PRED_APP_NAME = 'PREDICTMARKET';
 export const PRED_APP_DESCRIPTION =
   "Building the world's best cryptocurrency wallet tool, providing developers with the finest learning toolkits to help reduce learning costs and facilitate knowledge acquisition.";
@@ -19,3 +35,5 @@ export const WC_PROJECT_ID = '29db29d9b55f7729f8c061b43fda1bb5';
 // error messages
 export const ERROR_MESSAGE = 'Oops, something went wrong!';
 export const SIGN_IN_REQUIRED = 'Login to continue';
+
+export const DEFAULT_CHAIN_ID = IS_MAINNET ? CHAINIDS.OP_MAINNET : CHAINIDS.OP_SEPOLIA;

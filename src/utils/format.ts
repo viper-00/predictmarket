@@ -1,3 +1,5 @@
+import { countDigits } from './number';
+
 /**
  * Returns a string of form "abc...xyz"
  * @param {string} str string to string
@@ -9,4 +11,24 @@ export const formatEllipsisTxt = (str?: string, n = 6): string => {
     return `${str.slice(0, n)}...${str.slice(str.length - n)}`;
   }
   return '';
+};
+
+export const formatTimestamp = (timestamp: number): string => {
+  const defaultNum = countDigits(timestamp);
+  if (defaultNum !== 10 && defaultNum !== 13) {
+    return '';
+  }
+
+  if (countDigits(timestamp) === 10) {
+    timestamp = timestamp * 1000;
+  }
+
+  const date = new Date(timestamp);
+
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${month} ${year}`;
 };

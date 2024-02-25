@@ -7,6 +7,7 @@ import {
   Flex,
   Grid,
   Heading,
+  IconButton,
   Tab,
   TabIndicator,
   TabList,
@@ -15,26 +16,71 @@ import {
   Tabs,
   Text,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
+import { getJoinedDate, getUserAvatarUrl, getUserContractAddress, getUsername } from 'lib/store/user';
+import { useEffect, useState } from 'react';
 import { IoStatsChart } from 'react-icons/io5';
+import { formatEllipsisTxt, formatTimestamp } from 'utils/format';
 
 const Profile = () => {
+  const [username, setUsername] = useState<string>('');
+  const [contractAddress, setContractAddress] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const [joinedDate, setJoinedDate] = useState<number>(0);
+
+  const contractBgColor = useColorModeValue("#f2f2f2", "#2c3f4f")
+
+  const toast = useToast();
+
+  useEffect(() => {
+    setContractAddress(getUserContractAddress());
+    setUsername(getUsername());
+    setJoinedDate(getJoinedDate());
+    setAvatarUrl(getUserAvatarUrl());
+  }, []);
+
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
       <MetaTags title="Profile" />
       <HomeNav />
-      <Container minWidth={'55%'}>
+      <Container maxWidth={["100%", "100%", "100%", "80%", "70%", "60%"]}>
         <Box mt={16}>
           <Flex justifyContent={'space-between'}>
             <Flex>
-              <Avatar src="https://bit.ly/broken-link" size={'2xl'} />
+              {avatarUrl !== '' ? (
+                <>
+                  <Avatar size={'2xl'} src={avatarUrl} />
+                </>
+              ) : (
+                <>
+                  <Avatar size={'2xl'} src="./default-avatar.svg" />
+                </>
+              )}
               <Box ml={8}>
-                <Heading>Viper00</Heading>
+                <Heading>{username}</Heading>
                 <Flex mt={5}>
-                  <Text>0x25C9...cE1c</Text>
-                  <Text pl={5}>Joined Feb 2024</Text>
+                  <Text
+                    background={contractBgColor}
+                    px={4}
+                    borderRadius={10}
+                    height={6}
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(contractAddress);
+
+                      toast({
+                        title: `Copied successfully`,
+                        status: 'success',
+                        isClosable: true,
+                      });
+                    }}
+                  >
+                    {formatEllipsisTxt(contractAddress)}
+                  </Text>
+                  {/* <Text pl={5}>Joined {Date(getJoinedDate().).toLocaleString()}</Text> */}
+                  <Text pl={5}>Joined {formatTimestamp(joinedDate)}</Text>
                 </Flex>
               </Box>
             </Flex>

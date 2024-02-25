@@ -58,14 +58,14 @@ const Home = () => {
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
       <MetaTags title="Home" />
       <HomeNav />
-      <Container maxW="80%">
-        <Box mt={5}>
+      <Container maxWidth={{ base: '99%', md: '95%', lg: '90%' }}>
+        <Box pt={5}>
           <HomeRecommend />
         </Box>
-        <Box mt={5}>
+        <Box pt={5}>
           <HomeFeed />
         </Box>
-        <Box mt={5} pb={20}>
+        <Box pt={5} pb={20}>
           <RecentActivity />
         </Box>
       </Container>

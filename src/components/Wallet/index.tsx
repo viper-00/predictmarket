@@ -34,18 +34,18 @@ const Wallet = () => {
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
       <MetaTags title="Wallet" />
       <HomeNav />
-      <Container minWidth={'60%'} mt={10}>
+      <Container maxWidth={["100%", "100%", "100%", "80%", "70%", "60%"]} mt={10}>
         <Grid templateColumns="repeat(3, 1fr)" gap={4}>
           <GridItem colSpan={2}>
             <Box borderWidth={1} borderRadius={10} p={5}>
               <Flex>
-                <Text as="mark">EASIEST METHOD</Text>
+                <Text backgroundColor={"#2b6cb0"} color={"#fff"} fontSize={12} fontWeight='bold' px={1}>EASIEST METHOD</Text>
                 <Text ml={5} fontSize={14}>
-                  1 MINUTE * FREE
+                  1 MINUTE - FREE
                 </Text>
               </Flex>
               <Flex mt={5} alignItems={'center'}>
-                <Text fontWeight={'bold'}>Deposit USDC/USDT(Polygon)</Text>
+                <Text fontWeight={'bold'}>Deposit USDC/USDT(Optimism)</Text>
                 <Circle size={10} bg="tomato" color="white" ml={2}>
                   <IoLogoUsd />
                 </Circle>
@@ -65,7 +65,7 @@ const Wallet = () => {
                 <Text ml={2} fontSize={'16'}>
                   Send/withdraw USDC/USDT to the address below and select
                 </Text>
-                <Button size={'sm'}>Polygon</Button>
+                <Button size={'sm'}>Optimism</Button>
                 <Text>as the network.</Text>
               </Flex>
               <Flex mt={5}>

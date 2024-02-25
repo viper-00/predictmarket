@@ -35,8 +35,9 @@ import {
   AbsoluteCenter,
   GridItem,
   Image,
+  useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiHome, FiMenu, FiBell } from 'react-icons/fi';
 import { MdNotifications, MdNotificationsNone } from 'react-icons/md';
 import { PiCopy } from 'react-icons/pi';
@@ -46,6 +47,15 @@ import SignupDialog from 'components/Dialog/SignupDialog';
 import { IoMdBasketball } from 'react-icons/io';
 import { FiActivity } from 'react-icons/fi';
 import { AiOutlineTrophy } from 'react-icons/ai';
+import {
+  getUserAuthorization,
+  getUserContractAddress,
+  getUsername,
+  resetUser,
+  setUserAuthorization,
+  getUserAvatarUrl,
+} from 'lib/store/user';
+import { formatEllipsisTxt } from 'utils/format';
 
 const HomeNav = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -53,16 +63,51 @@ const HomeNav = () => {
   const { isOpen: isLogInOpen, onOpen: onLogInOpen, onClose: onLogInClose } = useDisclosure();
   const { isOpen: isSignUpOpen, onOpen: onSignUpOpen, onClose: onSignUpClose } = useDisclosure();
 
+  const toast = useToast();
+
   const [inputVal, setInputVal] = useState<string>('');
   const [isLogin, setIsLogin] = useState<boolean>(false);
 
+  const textColor = useColorModeValue('#828282', '#fff');
+  const bgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
+
+  const [username, setUsername] = useState<string>('');
+  const [contractAddress, setContractAddress] = useState<string>('');
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
+
+  useEffect(() => {
+    setUsername(getUsername());
+    setContractAddress(getUserContractAddress());
+    setAvatarUrl(getUserAvatarUrl());
+  }, []);
+
+  useEffect(() => {
+    const auth = getUserAuthorization();
+    if (auth && auth !== '') {
+      setIsLogin(true);
+    }
+  }, []);
+
+  const onLogout = () => {
+    resetUser();
+    window.location.href = '/';
+  };
+
   return (
-    <Box pl={7} pr={3} paddingTop={3} boxShadow={'md'}>
+    <Box pl={7} pr={3} paddingTop={5} borderTopWidth={1} borderBottomWidth={1}>
       <Grid templateColumns="repeat(3, 1fr)" gap={6}>
         <GridItem colSpan={2}>
           <Flex alignItems={'center'}>
             <Link href="/">
-              <Image src="./logo_white.svg" alt="logo" width={'100%'} height={'100%'} />
+              {colorMode === 'light' ? (
+                <>
+                  <Image src="./logo_black.svg" alt="logo" width={'100%'} height={'100%'} />
+                </>
+              ) : (
+                <>
+                  <Image src="./logo_white.svg" alt="logo" width={'100%'} height={'100%'} />
+                </>
+              )}
             </Link>
             <InputGroup backgroundColor={useColorModeValue('white', 'gray.900')} ml={5}>
               <InputLeftElement pointerEvents="none">
@@ -82,28 +127,28 @@ const HomeNav = () => {
         </GridItem>
 
         <GridItem colSpan={1}>
-          <Flex height={'100%'}>
+          <Flex height={'100%'} justifyContent="right">
             <Flex borderRightWidth={isLogin ? 1 : 0} px={2} height="100%">
-              <Link href="/markets" _hover={{ backgroundColor: '#f2f2f2' }} borderRadius={10} px={3}>
+              <Link href="/markets" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                 <Flex flexDirection={'column'} alignItems={'center'}>
                   <IoMdBasketball size={20} />
-                  <Text fontSize={13} color={'#828282'} fontWeight={'bold'}>
+                  <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                     Markets
                   </Text>
                 </Flex>
               </Link>
-              <Link href="/activity" _hover={{ backgroundColor: '#f2f2f2' }} borderRadius={10} px={3}>
+              <Link href="/activity" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                 <Flex flexDirection={'column'} alignItems={'center'}>
                   <FiActivity size={20} />
-                  <Text fontSize={13} color={'#828282'} fontWeight={'bold'}>
+                  <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                     Activity
                   </Text>
                 </Flex>
               </Link>
-              <Link href="/leaderboard" _hover={{ backgroundColor: '#f2f2f2' }} borderRadius={10} px={3}>
+              <Link href="/leaderboard" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                 <Flex flexDirection={'column'} alignItems={'center'}>
                   <AiOutlineTrophy size={20} />
-                  <Text fontSize={13} color={'#828282'} fontWeight={'bold'}>
+                  <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                     Ranks
                   </Text>
                 </Flex>
@@ -111,22 +156,22 @@ const HomeNav = () => {
 
               {isLogin ? (
                 <>
-                  <Link href="/portfolio" _hover={{ backgroundColor: '#f2f2f2' }} borderRadius={10} px={3}>
+                  <Link href="/portfolio" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                     <Flex flexDirection={'column'} alignItems={'center'}>
                       <Text fontSize={14} color={'#27ae60'}>
                         $0.00
                       </Text>
-                      <Text fontSize={13} color={'#828282'} fontWeight={'bold'}>
+                      <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                         Portfolio
                       </Text>
                     </Flex>
                   </Link>
-                  <Link href="/wallet" _hover={{ backgroundColor: '#f2f2f2' }} borderRadius={10} px={3}>
+                  <Link href="/wallet" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                     <Flex flexDirection={'column'} alignItems={'center'}>
                       <Text fontSize={14} color={'#27ae60'}>
                         $0.00
                       </Text>
-                      <Text fontSize={13} color={'#828282'} fontWeight={'bold'}>
+                      <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                         Cash
                       </Text>
                     </Flex>
@@ -144,7 +189,7 @@ const HomeNav = () => {
                   <Popover>
                     <PopoverTrigger>
                       <Flex
-                        _hover={{ backgroundColor: '#f2f2f2' }}
+                        _hover={{ backgroundColor: bgColor }}
                         px={3}
                         height={'100%'}
                         justifyContent={'center'}
@@ -191,11 +236,19 @@ const HomeNav = () => {
                       variant={'link'}
                       cursor={'pointer'}
                       minW={0}
-                      _hover={{ backgroundColor: '#f2f2f2' }}
+                      _hover={{ backgroundColor: bgColor }}
                       px={3}
                       rightIcon={<ChevronDownIcon />}
                     >
-                      <Avatar size={'sm'} src={'https://avatars.dicebear.com/api/male/username.svg'} />
+                      {avatarUrl !== '' ? (
+                        <>
+                          <Avatar size={'sm'} src={avatarUrl} />
+                        </>
+                      ) : (
+                        <>
+                          <Avatar size={'sm'} src="./default-avatar.svg" />
+                        </>
+                      )}
                     </MenuButton>
                   </>
                 ) : (
@@ -208,14 +261,38 @@ const HomeNav = () => {
                     <>
                       <Box px={4}>
                         <Flex alignItems={'center'}>
-                          <Avatar size={'sm'} src={'https://avatars.dicebear.com/api/male/username.svg'} />
+                          {avatarUrl !== '' ? (
+                            <>
+                              <Avatar size={'sm'} src={avatarUrl} />
+                            </>
+                          ) : (
+                            <>
+                              <Avatar size={'sm'} src="./default-avatar.svg" />
+                            </>
+                          )}
                           <Box pl={2}>
-                            <Text fontWeight={'bold'}>viper00</Text>
+                            <Text fontWeight={'bold'}>{username}</Text>
                             <Flex alignItems={'center'}>
                               <Text pr={1} fontSize={14}>
-                                0x222225...E1c
+                                {formatEllipsisTxt(contractAddress)}
                               </Text>
-                              <PiCopy size={18} />
+                              <IconButton
+                                isRound={true}
+                                ml={2}
+                                size="xs"
+                                aria-label="copy"
+                                fontSize={18}
+                                onClick={async () => {
+                                  await navigator.clipboard.writeText(contractAddress);
+
+                                  toast({
+                                    title: `Copied successfully`,
+                                    status: 'success',
+                                    isClosable: true,
+                                  });
+                                }}
+                                icon={<PiCopy />}
+                              />
                             </Flex>
                           </Box>
                         </Flex>
@@ -305,7 +382,9 @@ const HomeNav = () => {
                     <>
                       <MenuDivider />
                       <Box mx={2}>
-                        <MenuItem py={3}>Logout</MenuItem>
+                        <MenuItem py={3} onClick={onLogout}>
+                          Logout
+                        </MenuItem>
                       </Box>
                     </>
                   )}
@@ -316,13 +395,13 @@ const HomeNav = () => {
         </GridItem>
       </Grid>
 
-      <Flex gap={4} mt={4}>
+      <Flex gap={6} mt={4}>
         <Link href="#" style={{ textDecoration: 'none' }}>
           <Text
             height={38}
             _hover={{
               borderBottomWidth: 2,
-              borderBottomColor: '#000',
+              borderBottomColor: useColorModeValue('#000', '#fff'),
             }}
           >
             All

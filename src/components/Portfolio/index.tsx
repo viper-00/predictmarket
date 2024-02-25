@@ -1,16 +1,13 @@
+import { Box, useColorModeValue } from '@chakra-ui/react';
 import MetaTags from 'components/Common/MetaTags';
-import SidebarWithHeader from 'components/Navigation/Sidebar';
-// import WalletPage from '../Wallet';
+import HomeNav from 'components/Navbar/HomeNav';
 
 const Portfolio = () => {
   return (
-    <>
-      <MetaTags title="Portfolio" />
-      <SidebarWithHeader>
-        {/* <WalletPage /> */}
-        <></>
-      </SidebarWithHeader>
-    </>
+    <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
+      <MetaTags title="Profile" />
+      <HomeNav />
+    </Box>
   );
 };
 
