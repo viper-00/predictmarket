@@ -15,6 +15,7 @@ export class Http {
   static userSetting = this.httpPath + 'client/user/user-setting';
   static userNotificationSetting = this.httpPath + 'client/user/user-notification-setting';
   static userAffiliate = this.httpPath + 'client/user/user-affiliate';
+  static userNotification = this.httpPath + 'client/user/user-notification';
 
   // event
   static marketEvent = this.httpPath + 'client/event/market-event';

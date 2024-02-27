@@ -2,7 +2,7 @@ import { Box, Button, Card, Center, Container, Text, useColorModeValue, useToast
 import axios from 'axios';
 import MetaTags from 'components/Common/MetaTags';
 import { useRouter } from 'next/router';
-import { Http } from 'packages/core/http';
+import { Http } from 'packages/core/http/http';
 import { useEffect } from 'react';
 
 const Confirm = () => {

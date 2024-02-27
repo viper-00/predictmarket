@@ -47,15 +47,10 @@ import SignupDialog from 'components/Dialog/SignupDialog';
 import { IoMdBasketball } from 'react-icons/io';
 import { FiActivity } from 'react-icons/fi';
 import { AiOutlineTrophy } from 'react-icons/ai';
-import {
-  getUserAuthorization,
-  getUserContractAddress,
-  getUsername,
-  resetUser,
-  setUserAuthorization,
-  getUserAvatarUrl,
-} from 'lib/store/user';
+import { getUserAuthorization, getUserContractAddress, getUsername, resetUser, getUserAvatarUrl } from 'lib/store/user';
 import { formatEllipsisTxt } from 'utils/format';
+import { Http } from 'packages/core/http/http';
+import axios from 'packages/core/http/axios';
 
 const HomeNav = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -85,6 +80,16 @@ const HomeNav = () => {
     const auth = getUserAuthorization();
     if (auth && auth !== '') {
       setIsLogin(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    async function getNotifications() {
+      const response = await axios.get(Http.userNotification);
+      console.log(response.data);
+    }
+    if (getUserAuthorization() != '') {
+      getNotifications();
     }
   }, []);
 

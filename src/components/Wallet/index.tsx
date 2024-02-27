@@ -19,8 +19,15 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Icon,
   Textarea,
   useColorModeValue,
+  useToast,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
 import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
@@ -28,45 +35,65 @@ import { IoLogoUsd } from 'react-icons/io';
 import { FaQrcode } from 'react-icons/fa';
 import { RiVisaLine } from 'react-icons/ri';
 import { IoChatboxEllipsesOutline } from 'react-icons/io5';
+import { useEffect, useState } from 'react';
+import { getUserContractAddress } from 'lib/store/user';
+import USDT from '../../assets/coin/usdt.png';
+import USDC from '../../assets/coin/usdc.png';
+import Image from 'next/image';
+import { LuRefreshCw } from 'react-icons/lu';
+import { IoMdMore } from 'react-icons/io';
 
 const Wallet = () => {
+  const [contractAddress, setContractAddress] = useState<string>('');
+
+  const toast = useToast();
+
+  useEffect(() => {
+    setContractAddress(getUserContractAddress());
+  }, []);
+
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
       <MetaTags title="Wallet" />
       <HomeNav />
-      <Container maxWidth={["100%", "100%", "100%", "80%", "70%", "60%"]} mt={10}>
+      <Container maxWidth={['100%', '100%', '100%', '80%', '75%', '60%']} mt={10}>
         <Grid templateColumns="repeat(3, 1fr)" gap={4}>
           <GridItem colSpan={2}>
             <Box borderWidth={1} borderRadius={10} p={5}>
               <Flex>
-                <Text backgroundColor={"#2b6cb0"} color={"#fff"} fontSize={12} fontWeight='bold' px={1}>EASIEST METHOD</Text>
+                <Text backgroundColor={'#2b6cb0'} color={'#fff'} fontSize={12} fontWeight="bold" px={1}>
+                  EASIEST METHOD
+                </Text>
                 <Text ml={5} fontSize={14}>
                   1 MINUTE - FREE
                 </Text>
               </Flex>
               <Flex mt={5} alignItems={'center'}>
                 <Text fontWeight={'bold'}>Deposit USDC/USDT(Optimism)</Text>
-                <Circle size={10} bg="tomato" color="white" ml={2}>
-                  <IoLogoUsd />
+                <Circle size={10} color="white" ml={2} borderWidth={1}>
+                  <Image alt="coin" src={USDC} width={30} height={30} />
+                </Circle>
+                <Circle size={10} color="white" ml={2} borderWidth={1}>
+                  <Image alt="coin" src={USDT} width={30} height={30} />
                 </Circle>
               </Flex>
               <Flex mt={5} alignItems={'center'}>
-                <Circle size={10} bg="tomato" color="white">
+                <Circle size={8} bg="#2e5cff1a" color="black">
                   <Text>1</Text>
                 </Circle>
-                <Text fontSize={'16'} ml={2}>
+                <Text fontSize={'14'} ml={2}>
                   Buy USDC/USDT on Coinbase, Binance or another exchange.
                 </Text>
               </Flex>
-              <Flex mt={5} alignItems={'center'} justifyContent={'center'}>
-                <Circle size={10} bg="tomato" color="white">
+              <Flex mt={5} alignItems={'center'}>
+                <Circle size={8} bg="#2e5cff1a" color="black">
                   <Text>2</Text>
                 </Circle>
-                <Text ml={2} fontSize={'16'}>
-                  Send/withdraw USDC/USDT to the address below and select
-                </Text>
-                <Button size={'sm'}>Optimism</Button>
-                <Text>as the network.</Text>
+                <Flex>
+                  <Text ml={2} fontSize={'14'}>
+                    Send/withdraw USDC/USDT to the address below and select Optimism as the network.
+                  </Text>
+                </Flex>
               </Flex>
               <Flex mt={5}>
                 <Flex
@@ -78,21 +105,36 @@ const Wallet = () => {
                   px={5}
                 >
                   <Box
-                    onClick={() => {
-                      console.log('123');
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(contractAddress);
+
+                      toast({
+                        title: `Copied successfully`,
+                        status: 'success',
+                        isClosable: true,
+                      });
                     }}
                   >
-                    <Text>0x25C9eDd260F7c6b382f3Fcdf7EB82188910ccE1c</Text>
+                    <Text>{contractAddress}</Text>
                   </Box>
-                  <Box
-                    onClick={() => {
-                      console.log('456');
-                    }}
-                  >
+                  <Box onClick={async () => {}}>
                     <FaQrcode />
                   </Box>
                 </Flex>
-                <Button colorScheme="blue" size={'lg'} ml={2}>
+                <Button
+                  colorScheme="blue"
+                  size={'lg'}
+                  ml={2}
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(contractAddress);
+
+                    toast({
+                      title: `Copied successfully`,
+                      status: 'success',
+                      isClosable: true,
+                    });
+                  }}
+                >
                   Copy
                 </Button>
               </Flex>
@@ -108,7 +150,9 @@ const Wallet = () => {
             <Box backgroundColor={'#eef1f5'} p={3} borderRadius={10}>
               <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Flex alignItems={'center'}>
-                  <Text>No crypto?</Text>
+                  <Text fontWeight={'bold'} fontSize={16}>
+                    No crypto?
+                  </Text>
                   <Button colorScheme="blue" borderRadius={30} ml={3} size={'sm'}>
                     Buy USDC/USDT
                   </Button>
@@ -131,35 +175,35 @@ const Wallet = () => {
             </Box>
             <Grid templateColumns="repeat(4, 1fr)" gap={4} mt={5}>
               <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={8} bg="tomato" color="white">
-                  <Text>1</Text>
+                <Circle size={10} color="white" ml={2} borderWidth={1}>
+                  <Image alt="coin" src={USDC} width={30} height={30} />
                 </Circle>
                 <Text mt={2} fontWeight={'bold'}>
-                  USDC(ETH)
+                  USDC(OP)
                 </Text>
               </Flex>
               <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={8} bg="tomato" color="white">
-                  <Text>1</Text>
+                <Circle size={10} color="white" ml={2} borderWidth={1}>
+                  <Image alt="coin" src={USDT} width={30} height={30} />
                 </Circle>
                 <Text mt={2} fontWeight={'bold'}>
-                  USDC(ETH)
+                  USDT(OP)
                 </Text>
               </Flex>
               <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={8} bg="tomato" color="white">
-                  <Text>1</Text>
+                <Circle size={10} color="white" ml={2} borderWidth={1}>
+                  <Image alt="coin" src={USDT} width={30} height={30} />
                 </Circle>
                 <Text mt={2} fontWeight={'bold'}>
-                  USDC(ETH)
+                  Other
                 </Text>
               </Flex>
               <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={8} bg="tomato" color="white">
-                  <Text>1</Text>
+                <Circle size={10} color="white" ml={2} borderWidth={1}>
+                  <Image alt="coin" src={USDT} width={30} height={30} />
                 </Circle>
                 <Text mt={2} fontWeight={'bold'}>
-                  USDC(ETH)
+                  P2P
                 </Text>
               </Flex>
             </Grid>
@@ -172,39 +216,56 @@ const Wallet = () => {
                   $0.00
                 </Text>
                 <Flex>
-                  <Circle size={8} bg="tomato" color="white" mr={2}>
-                    <Text>1</Text>
-                  </Circle>
-                  <Circle size={8} bg="tomato" color="white">
-                    <Text>1</Text>
-                  </Circle>
+                  <IconButton
+                    aria-label="refresh wallet"
+                    icon={<LuRefreshCw />}
+                    mr={2}
+                    borderRadius={50}
+                    variant="outline"
+                  />
+                  <Menu>
+                    <MenuButton
+                      as={IconButton}
+                      aria-label="Options"
+                      icon={<IoMdMore />}
+                      borderRadius={50}
+                      variant="outline"
+                    ></MenuButton>
+                    <MenuList>
+                      <MenuItem>Export private key</MenuItem>
+                      <MenuItem>Blockchainscan</MenuItem>
+                    </MenuList>
+                  </Menu>
                 </Flex>
               </Flex>
               <Text mt={3}>Claim</Text>
             </Box>
-            <Box borderWidth={1} borderRadius={10} p={2} mt={5}>
-              <Flex alignItems={'center'} justifyContent={'center'}>
-                <IoChatboxEllipsesOutline size={20} />
-                <Text fontWeight={'bold'} ml={2}>
-                  Chat with a human
-                </Text>
-              </Flex>
-            </Box>
+            <Button
+              mt={5}
+              width={'100%'}
+              leftIcon={<IoChatboxEllipsesOutline />}
+              colorScheme="teal"
+              variant="outline"
+              borderWidth={1}
+              borderRadius={10}
+            >
+              Chat with a human
+            </Button>
 
             <Box borderWidth={1} borderRadius={10} p={5} mt={5}>
               <Text fontSize={'14'}>TUTORIALS</Text>
               <Box mt={2}>
                 <Link href="">
-                  <Text>Coinbase</Text>
+                  <Text fontSize={16}>Coinbase</Text>
                 </Link>
                 <Link href="">
-                  <Text>Robinhood</Text>
+                  <Text fontSize={16}>Robinhood</Text>
                 </Link>
                 <Link href="">
-                  <Text>Paypal</Text>
+                  <Text fontSize={16}>Paypal</Text>
                 </Link>
                 <Link href="">
-                  <Text>ETH</Text>
+                  <Text fontSize={16}>ETH</Text>
                 </Link>
                 <Link href="">
                   <Text>I dont have any crypto</Text>

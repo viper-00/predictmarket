@@ -19,7 +19,7 @@ import { Google } from '@web3uikit/icons';
 import axios from 'axios';
 import { DEFAULT_CHAIN_ID } from 'packages/constants';
 import { emailRegex } from 'packages/constants/regex';
-import { Http } from 'packages/core/http';
+import { Http } from 'packages/core/http/http';
 import React, { useState } from 'react';
 import { MdPhone } from 'react-icons/md';
 

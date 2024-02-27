@@ -20,8 +20,8 @@ import { Google } from '@web3uikit/icons';
 import React, { useState } from 'react';
 import { MdPhone } from 'react-icons/md';
 import { emailRegex } from 'packages/constants/regex';
-import { Http } from 'packages/core/http';
-import axios from 'axios';
+import { Http } from 'packages/core/http/http';
+import axios from 'packages/core/http/axios';
 import {
   setJoinedDate,
   setUserAddress,
@@ -71,18 +71,18 @@ const LoginDialog = (props: Props) => {
       email: email,
     });
 
-    if (response.data.code === 10200) {
+    if (response.data.auth != "") {
       setEmail('');
 
-      const auth = response.data.data.auth;
-      const address = response.data.data.address;
-      const contractAddress = response.data.data.contract_address;
-      const chainId = response.data.data.chain_id;
-      const username = response.data.data.username;
-      const bio = response.data.data.bio;
-      const avatarUrl = response.data.data.avatar_url;
-      const joinedDate = response.data.data.joined_date;
-      const email = response.data.data.email;
+      const auth = response.data.auth;
+      const address = response.data.address;
+      const contractAddress = response.data.contract_address;
+      const chainId = response.data.chain_id;
+      const username = response.data.username;
+      const bio = response.data.bio;
+      const avatarUrl = response.data.avatar_url;
+      const joinedDate = response.data.joined_date;
+      const email = response.data.email;
       if (!auth || auth === '') {
         toast({
           title: `Login failed, please confirm that the account has been registered`,
