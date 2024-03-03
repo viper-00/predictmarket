@@ -37,3 +37,5 @@ export const ERROR_MESSAGE = 'Oops, something went wrong!';
 export const SIGN_IN_REQUIRED = 'Login to continue';
 
 export const DEFAULT_CHAIN_ID = IS_MAINNET ? CHAINIDS.OP_MAINNET : CHAINIDS.OP_SEPOLIA;
+
+export const OP_SCAN_LINK = IS_MAINNET ? "https://optimism.etherscan.io/address" : "https://sepolia-optimism.etherscan.io/address"

@@ -15,22 +15,38 @@ import {
   Heading,
   Divider,
   Link,
+  useColorMode,
 } from '@chakra-ui/react';
 import { FaInstagram, FaTwitch, FaTwitter, FaYoutube } from 'react-icons/fa';
 import { FiHome } from 'react-icons/fi';
 import { MdCall } from 'react-icons/md';
 import { ReactNode } from 'react';
+import LogoBlack from 'assets/images/logo_black.svg';
+import LogoWhite from 'assets/images/logo_white.svg';
 import Image from 'next/image';
 
 const HomeFooter = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <Box bg={useColorModeValue('#007BFC', 'gray.900')} color={useColorModeValue('white', 'gray.200')}>
       <Container as={Stack} maxW="100%" p={10}>
         <SimpleGrid templateColumns="repeat(2, 1fr)" gap={6}>
           <Stack spacing={6}>
-            <Flex alignItems={'center'}>
-              <Image src="./logo_black.svg" alt="logo" width={168} height={35} />
-            </Flex>
+            {/* <Flex alignItems={'center'}>
+              <Image src="./logo_black.svg" alt="logo" width={'auto'} height={'auto'}/>
+            </Flex> */}
+            <Link href="/">
+              {colorMode === 'light' ? (
+                <>
+                  <Image src={LogoWhite} alt="logo" />
+                </>
+              ) : (
+                <>
+                  <Image src={LogoWhite} alt="logo" />
+                </>
+              )}
+            </Link>
             <Text fontSize={'md'}>The worlds largest decentralized prediction market.</Text>
             <Flex>
               <Button rightIcon={<MdCall />} colorScheme="gray">

@@ -53,7 +53,7 @@ export const ChainIdToName: { [key in Chain]: string } = {
   [Chain.SOLANA]: 'Solana',
   [Chain.HARMONY]: 'Harmony',
   [Chain.PALM]: 'Paml',
-  [Chain.AURORA]: "Aurora",
+  [Chain.AURORA]: 'Aurora',
 };
 
 export enum TxStatus {
@@ -101,4 +101,21 @@ export type FeeData = {
 
 export type AssetBalance = {
   [key: string]: string;
+};
+
+export type UserNotification = {
+  chainId: number;
+  title: string;
+  content: string;
+  createdTime: number;
+  description: string;
+  hash: string;
+  isRead: number;
+  notificationType: string;
+};
+
+export type UserCoinBalance = {
+  eth: string;
+  usdt: string;
+  usdc: string;
 };

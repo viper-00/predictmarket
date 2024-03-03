@@ -36,21 +36,41 @@ import { FaQrcode } from 'react-icons/fa';
 import { RiVisaLine } from 'react-icons/ri';
 import { IoChatboxEllipsesOutline } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
-import { getUserContractAddress } from 'lib/store/user';
+import { getUserAuthorization, getUserContractAddress } from 'lib/store/user';
 import USDT from '../../assets/coin/usdt.png';
 import USDC from '../../assets/coin/usdc.png';
 import Image from 'next/image';
 import { LuRefreshCw } from 'react-icons/lu';
 import { IoMdMore } from 'react-icons/io';
+import axios from 'packages/core/http/axios';
+import { Http } from 'packages/core/http/http';
+import { UserCoinBalance } from 'packages/types';
+import { OP_SCAN_LINK } from 'packages/constants';
 
 const Wallet = () => {
   const [contractAddress, setContractAddress] = useState<string>('');
+  const [balance, setBalance] = useState<UserCoinBalance>();
 
   const toast = useToast();
 
   useEffect(() => {
     setContractAddress(getUserContractAddress());
+    updateBalance()
   }, []);
+
+  const updateBalance = async () => {
+    if (getUserAuthorization() !== '') {
+      const response: any = await axios.get(Http.userBalance);
+      if (response.code === 10200 && response.result) {
+        const coinBalance: UserCoinBalance = {
+          eth: response.data.eth,
+          usdt: response.data.usdt,
+          usdc: response.data.usdc,
+        };
+        setBalance(coinBalance);
+      }
+    }
+  };
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
@@ -210,9 +230,9 @@ const Wallet = () => {
           </GridItem>
           <GridItem colSpan={1}>
             <Box borderWidth={1} borderRadius={10} p={5}>
-              <Text>BALANCE</Text>
+              <Text fontSize={12}>BALANCE</Text>
               <Flex mt={1} justifyContent={'space-between'}>
-                <Text fontWeight={'bold'} fontSize={25}>
+                <Text fontWeight={'bold'} fontSize={30}>
                   $0.00
                 </Text>
                 <Flex>
@@ -222,6 +242,7 @@ const Wallet = () => {
                     mr={2}
                     borderRadius={50}
                     variant="outline"
+                    onClick={updateBalance}
                   />
                   <Menu>
                     <MenuButton
@@ -233,12 +254,37 @@ const Wallet = () => {
                     ></MenuButton>
                     <MenuList>
                       <MenuItem>Export private key</MenuItem>
-                      <MenuItem>Blockchainscan</MenuItem>
+                      <MenuItem>
+                      <Link href={`${OP_SCAN_LINK}/${contractAddress}`} target={'_blank'} style={{textDecoration: 'none'}}>Optimismscan</Link>
+                      </MenuItem>
                     </MenuList>
                   </Menu>
                 </Flex>
               </Flex>
-              <Text mt={3}>Claim</Text>
+              <Flex mt={2}>
+                <Box>
+                  <Text fontWeight={'bold'} fontSize={20}>
+                    (ETH)
+                  </Text>
+                  <Text fontWeight={'bold'} fontSize={20}>
+                    (USDT)
+                  </Text>
+                  <Text fontWeight={'bold'} fontSize={20}>
+                    (USDC)
+                  </Text>
+                </Box>
+                <Box ml={2}>
+                  <Text fontWeight={'bold'} fontSize={20}>
+                    {balance?.eth}
+                  </Text>
+                  <Text fontWeight={'bold'} fontSize={20}>
+                    {balance?.usdt}
+                  </Text>
+                  <Text fontWeight={'bold'} fontSize={20}>
+                    {balance?.usdc}
+                  </Text>
+                </Box>
+              </Flex>
             </Box>
             <Button
               mt={5}

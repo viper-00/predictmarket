@@ -16,12 +16,12 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { Google } from '@web3uikit/icons';
-import axios from 'axios';
 import { DEFAULT_CHAIN_ID } from 'packages/constants';
 import { emailRegex } from 'packages/constants/regex';
 import { Http } from 'packages/core/http/http';
 import React, { useState } from 'react';
 import { MdPhone } from 'react-icons/md';
+import axios from 'packages/core/http/axios';
 
 type Props = {
   isOpen: boolean;
@@ -32,7 +32,7 @@ type Props = {
 const SignupDialog = (props: Props) => {
   const cancelRef = React.useRef<HTMLButtonElement>(null);
   const toast = useToast();
-  const [email, setEmail] = useState<string>();
+  const [email, setEmail] = useState<string>('');
 
   const handleEmailChange = (event: any) => {
     setEmail(event.target.value);
@@ -56,25 +56,29 @@ const SignupDialog = (props: Props) => {
       return;
     }
 
-    const response = await axios.post(Http.userRegister, {
-      email: email,
-      chain_id: DEFAULT_CHAIN_ID,
-    });
+    try {
+      const response: any = await axios.post(Http.userRegister, {
+        email: email,
+        chain_id: DEFAULT_CHAIN_ID,
+      });
 
-    if (response.data.code === 10200) {
-      setEmail('');
-      props.onClose();
-      toast({
-        title: `The certification email has been sent successfully, please go to your mailbox to check`,
-        status: 'success',
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: `Registration failed, please try again`,
-        status: 'error',
-        isClosable: true,
-      });
+      if (response.code === 10200 && response.result) {
+        setEmail('');
+        props.onClose();
+        toast({
+          title: `The certification email has been sent successfully, please go to your mailbox to check`,
+          status: 'success',
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: `Registration failed, please try again`,
+          status: 'error',
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getUserAuthorization } from 'lib/store/user';
+import { getUserAuthorization, resetUser } from 'lib/store/user';
 
 const baseHeader = {
   'Content-Type': 'application/json; charset=utf-8',
@@ -30,11 +30,17 @@ axios.interceptors.response.use(
       return response.data;
     }
 
-    console.error(response.data);
-    return Promise.reject(response.data.message);
+    if (response && response.data) {
+      return Promise.reject(response.data);
+    }
   },
   (error) => {
-    return Promise.reject(error);
+    if (error.response && error.response.status === 401) {
+      resetUser();
+      window.location.href = '/';
+    } else {
+      return Promise.reject(error);
+    }
   },
 );
 

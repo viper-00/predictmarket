@@ -34,7 +34,6 @@ import {
   useColorMode,
   AbsoluteCenter,
   GridItem,
-  Image,
   useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -48,9 +47,14 @@ import { IoMdBasketball } from 'react-icons/io';
 import { FiActivity } from 'react-icons/fi';
 import { AiOutlineTrophy } from 'react-icons/ai';
 import { getUserAuthorization, getUserContractAddress, getUsername, resetUser, getUserAvatarUrl } from 'lib/store/user';
-import { formatEllipsisTxt } from 'utils/format';
+import { formatEllipsisTxt, formatTimestamp } from 'utils/format';
 import { Http } from 'packages/core/http/http';
 import axios from 'packages/core/http/axios';
+import { UserNotification } from 'packages/types';
+import DefaultAvatar from 'assets/images/default-avatar.svg';
+import LogoBlack from 'assets/images/logo_black.svg';
+import LogoWhite from 'assets/images/logo_white.svg';
+import Image from 'next/image';
 
 const HomeNav = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -69,6 +73,7 @@ const HomeNav = () => {
   const [username, setUsername] = useState<string>('');
   const [contractAddress, setContractAddress] = useState<string>('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const [notification, setNotification] = useState<UserNotification[]>([]);
 
   useEffect(() => {
     setUsername(getUsername());
@@ -83,14 +88,43 @@ const HomeNav = () => {
     }
   }, []);
 
+  const updateNotification = async () => {
+    if (getUserAuthorization() !== '') {
+      try {
+        const response: any = await axios.get(Http.userNotification);
+        if (response.code === 10200 && response.result) {
+          const nos: UserNotification[] = response.data.map((element: any) => ({
+            chainId: element.chain_id,
+            title: element.title,
+            content: element.content,
+            createdTime: new Date(element.created_time).getTime(),
+            description: element.description,
+            hash: element.hash,
+            isRead: element.is_read,
+            notificationType: element.notification_type,
+          }));
+          setNotification(nos);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   useEffect(() => {
-    async function getNotifications() {
-      const response = await axios.get(Http.userNotification);
-      console.log(response.data);
+    async function prepare() {
+      updateNotification();
     }
-    if (getUserAuthorization() != '') {
-      getNotifications();
-    }
+
+    prepare();
+
+    const notifyTime = setInterval(() => {
+      updateNotification();
+    }, 5000);
+
+    return () => {
+      clearInterval(notifyTime);
+    };
   }, []);
 
   const onLogout = () => {
@@ -106,11 +140,11 @@ const HomeNav = () => {
             <Link href="/">
               {colorMode === 'light' ? (
                 <>
-                  <Image src="./logo_black.svg" alt="logo" width={'100%'} height={'100%'} />
+                  <Image src={LogoBlack} alt="logo"/>
                 </>
               ) : (
                 <>
-                  <Image src="./logo_white.svg" alt="logo" width={'100%'} height={'100%'} />
+                  <Image src={LogoWhite} alt="logo" />
                 </>
               )}
             </Link>
@@ -191,28 +225,56 @@ const HomeNav = () => {
                       <Text>Deposit</Text>
                     </Button>
                   </Box>
+                  <Box mx={2}>
+                    <Button
+                      colorScheme="green"
+                      onClick={() => {
+                        window.location.href = '/event/post';
+                      }}
+                    >
+                      <Text>Post</Text>
+                    </Button>
+                  </Box>
                   <Popover>
                     <PopoverTrigger>
-                      <Flex
+                      <IconButton
                         _hover={{ backgroundColor: bgColor }}
-                        px={3}
-                        height={'100%'}
-                        justifyContent={'center'}
-                        alignItems={'center'}
-                        borderRadius={10}
-                      >
-                        <MdNotificationsNone size={25} />
-                      </Flex>
+                        variant="outline"
+                        borderWidth={0}
+                        aria-label="MdNotificationsNone"
+                        icon={<MdNotificationsNone size={20} />}
+                      />
                     </PopoverTrigger>
-                    <PopoverContent mr={10} width={400} height={350}>
+                    <PopoverContent mr={10} width={400} height={500} overflow="auto">
                       <PopoverBody height={'100%'}>
                         <Text fontWeight={'bold'} fontSize={20}>
                           Notifications
                         </Text>
-                        <Flex direction={'column'} alignItems={'center'} justifyContent={'center'} height={'100%'}>
-                          <MdNotificationsNone size={30} />
-                          <Text mt={1}>You do not have any notifications</Text>
-                        </Flex>
+                        {notification.length > 0 ? (
+                          <Box pb={4}>
+                            {notification &&
+                              notification.map((item, index) => (
+                                <Link href="#" key={index} style={{ textDecoration: 'none' }}>
+                                  <Box pb={4} _hover={{ backgroundColor: bgColor }} py={4} px={2} borderRadius={10}>
+                                    <Text fontSize={14} fontWeight={'bold'}>
+                                      {item.title}
+                                    </Text>
+                                    <Text fontSize={12}>{item.content}</Text>
+                                    <Text fontSize={12} mt={2}>
+                                      {formatTimestamp(item.createdTime)}
+                                    </Text>
+                                  </Box>
+                                </Link>
+                              ))}
+                          </Box>
+                        ) : (
+                          <>
+                            <Flex direction={'column'} alignItems={'center'} justifyContent={'center'} height={'100%'}>
+                              <MdNotificationsNone size={30} />
+                              <Text mt={1}>You do not have any notifications</Text>
+                            </Flex>
+                          </>
+                        )}
                       </PopoverBody>
                     </PopoverContent>
                   </Popover>
@@ -251,7 +313,7 @@ const HomeNav = () => {
                         </>
                       ) : (
                         <>
-                          <Avatar size={'sm'} src="./default-avatar.svg" />
+                          <Avatar size={'sm'} src={DefaultAvatar} />
                         </>
                       )}
                     </MenuButton>
@@ -272,7 +334,7 @@ const HomeNav = () => {
                             </>
                           ) : (
                             <>
-                              <Avatar size={'sm'} src="./default-avatar.svg" />
+                              <Avatar size={'sm'} src={DefaultAvatar} />
                             </>
                           )}
                           <Box pl={2}>

@@ -43,7 +43,7 @@ type Props = {
 const LoginDialog = (props: Props) => {
   const cancelRef = React.useRef<HTMLButtonElement>(null);
   const toast = useToast();
-  const [email, setEmail] = useState<string>();
+  const [email, setEmail] = useState<string>('');
 
   const handleEmailChange = (event: any) => {
     setEmail(event.target.value);
@@ -67,54 +67,60 @@ const LoginDialog = (props: Props) => {
       return;
     }
 
-    const response = await axios.post(Http.userLogin, {
-      email: email,
-    });
+    try {
+      const response: any = await axios.post(Http.userLogin, {
+        email: email,
+      });
 
-    if (response.data.auth != "") {
-      setEmail('');
+      if (response.code === 10200 && response.result) {
+        if (response.data.auth != '') {
+          setEmail('');
 
-      const auth = response.data.auth;
-      const address = response.data.address;
-      const contractAddress = response.data.contract_address;
-      const chainId = response.data.chain_id;
-      const username = response.data.username;
-      const bio = response.data.bio;
-      const avatarUrl = response.data.avatar_url;
-      const joinedDate = response.data.joined_date;
-      const email = response.data.email;
-      if (!auth || auth === '') {
-        toast({
-          title: `Login failed, please confirm that the account has been registered`,
-          status: 'error',
-          isClosable: true,
-        });
-        return;
+          const auth = response.data.auth;
+          const address = response.data.address;
+          const contractAddress = response.data.contract_address;
+          const chainId = response.data.chain_id;
+          const username = response.data.username;
+          const bio = response.data.bio;
+          const avatarUrl = response.data.avatar_url;
+          const joinedDate = response.data.joined_date;
+          const email = response.data.email;
+          if (!auth || auth === '') {
+            toast({
+              title: `Login failed, please confirm that the account has been registered`,
+              status: 'error',
+              isClosable: true,
+            });
+            return;
+          }
+          setUserAuthorization(auth);
+          setUserAddress(address);
+          setUserContractAddress(contractAddress);
+          setUserChainId(chainId);
+          setUsername(username);
+          setUserAvatarUrl(avatarUrl);
+          setJoinedDate(joinedDate);
+          setUserEmail(email);
+          setUserBio(bio);
+
+          props.onClose();
+          toast({
+            title: `login successful`,
+            status: 'success',
+            isClosable: true,
+          });
+
+          window.location.href = '/';
+        } else {
+          toast({
+            title: `Login failed, please confirm that the account has been registered`,
+            status: 'error',
+            isClosable: true,
+          });
+        }
       }
-      setUserAuthorization(auth);
-      setUserAddress(address);
-      setUserContractAddress(contractAddress);
-      setUserChainId(chainId);
-      setUsername(username);
-      setUserAvatarUrl(avatarUrl);
-      setJoinedDate(joinedDate);
-      setUserEmail(email);
-      setUserBio(bio);
-
-      props.onClose();
-      toast({
-        title: `login successful`,
-        status: 'success',
-        isClosable: true,
-      });
-
-      window.location.href = '/';
-    } else {
-      toast({
-        title: `Login failed, please confirm that the account has been registered`,
-        status: 'error',
-        isClosable: true,
-      });
+    } catch (error) {
+      console.error(error);
     }
   };
 

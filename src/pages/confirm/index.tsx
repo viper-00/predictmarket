@@ -1,9 +1,8 @@
 import { Box, Button, Card, Center, Container, Text, useColorModeValue, useToast } from '@chakra-ui/react';
-import axios from 'axios';
 import MetaTags from 'components/Common/MetaTags';
 import { useRouter } from 'next/router';
 import { Http } from 'packages/core/http/http';
-import { useEffect } from 'react';
+import axios from 'packages/core/http/axios';
 
 const Confirm = () => {
   const router = useRouter();
@@ -20,23 +19,27 @@ const Confirm = () => {
       });
       return;
     }
-    const response = await axios.get(Http.userVerifyInvitation, {
-      params: {
-        code: code,
-      },
-    });
-    if (response.data.code === 10200) {
-      toast({
-        title: `Account verification successful, please go to the log in`,
-        status: 'success',
-        isClosable: true,
+    try {
+      const response: any = await axios.get(Http.userVerifyInvitation, {
+        params: {
+          code: code,
+        },
       });
-    } else {
-      toast({
-        title: `Verification failed, please register an account again`,
-        status: 'error',
-        isClosable: true,
-      });
+      if (response.code === 10200 && response.result) {
+        toast({
+          title: `Account verification successful, please go to the log in`,
+          status: 'success',
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: `Verification failed, please register an account again`,
+          status: 'error',
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
