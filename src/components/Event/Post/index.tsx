@@ -30,37 +30,43 @@ import {
 import { useToast } from '@chakra-ui/react';
 import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-  getEventCapitalPoolAmount,
+  // getEventCapitalPoolAmount,
   getEventConfirmPassword,
   getEventExpireTime,
   getEventLogo,
   getEventPassword,
   getEventPlayType,
-  getEventRuleDetails,
+  // getEventRuleDetails,
   getEventSettlementAddress,
-  getEventSingleAmount,
+  // getEventSingleAmount,
   getEventTitle,
   getEventType,
-  setEventCapitalPoolAmount,
+  // setEventCapitalPoolAmount,
   setEventConfirmPassword,
   setEventExpireTime,
   setEventLogo,
   setEventPassword,
   setEventPlayType,
-  setEventRuleDetails,
+  // setEventRuleDetails,
   setEventSettlementAddress,
-  setEventSingleAmount,
+  // setEventSingleAmount,
   setEventTitle,
   setEventType,
 } from 'lib/store/event';
+import axios from 'packages/core/http/axios';
+import { Http } from 'packages/core/http/http';
+import { EventPlayType } from 'packages/types';
+import { DEFAULT_CHAIN_ID } from 'packages/constants';
 
 const Form1 = () => {
   const [title, setTitle] = useState<string>(getEventTitle());
   const [type, setType] = useState<string>(getEventType());
   const [playType, setPlayType] = useState<string>(getEventPlayType());
-  const [ruleDetails, setRuleDetails] = useState<string>(getEventRuleDetails());
+  const [typeList, setTypeList] = useState<string[]>([]);
+  const [playTypeList, setPlayTypeList] = useState<EventPlayType[]>([]);
+  // const [ruleDetails, setRuleDetails] = useState<string>(getEventRuleDetails());
   const [exipreTime, setExipreTime] = useState<number>(getEventExpireTime());
 
   const onChangeTitle = (event: any) => {
@@ -78,15 +84,53 @@ const Form1 = () => {
     setEventPlayType(event.target.value);
   };
 
-  const onChangeRoleDetails = (event: any) => {
-    setRuleDetails(event.target.value);
-    setEventRuleDetails(event.target.value);
-  };
+  // const onChangeRoleDetails = (event: any) => {
+  //   setRuleDetails(event.target.value);
+  //   setEventRuleDetails(event.target.value);
+  // };
 
   const onChangeExpireTime = (event: any) => {
     setExipreTime(event.target.value);
     setEventExpireTime(event.target.value);
   };
+
+  useEffect(() => {
+    async function getEventType() {
+      try {
+        const response: any = await axios.get(Http.marketEventType);
+        if (response.code === 10200 && response.result) {
+          setTypeList(response.data);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function getEventPlayType() {
+      try {
+        const response: any = await axios.get(Http.marketEventPlay);
+        if (response.code === 10200 && response.result) {
+          let plays: EventPlayType[] = [];
+          response.data.forEach((item: any) => {
+            plays.push({
+              title: item.title,
+              introduce: item.introduce,
+              guessNumber: item.guess_number,
+              minimumCapitalPool: item.minimum_capital_pool,
+              maximumCapitalPool: item.maximum_capital_pool,
+              coin: item.coin,
+            });
+          });
+          setPlayTypeList(plays);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    getEventType();
+    getEventPlayType();
+  }, []);
 
   return (
     <>
@@ -106,9 +150,12 @@ const Form1 = () => {
           Type
         </FormLabel>
         <Select placeholder="Select type" value={type} onChange={onChangeType}>
-          <option value="option1">Type 1</option>
-          <option value="option2">Type 2</option>
-          <option value="option3">Type 3</option>
+          {typeList &&
+            typeList.map((item, index) => (
+              <option value={item} key={index}>
+                {item}
+              </option>
+            ))}
         </Select>
       </FormControl>
 
@@ -117,18 +164,21 @@ const Form1 = () => {
           Play Type
         </FormLabel>
         <Select placeholder="Select play" value={playType} onChange={onChangePlayType}>
-          <option value="option1">Play 1</option>
-          <option value="option2">Play 2</option>
-          <option value="option3">Play 3</option>
+          {playTypeList &&
+            playTypeList.map((item, index) => (
+              <option value={item.title} key={index}>
+                {item.title}
+              </option>
+            ))}
         </Select>
       </FormControl>
 
-      <FormControl mt="2">
+      {/* <FormControl mt="2">
         <FormLabel htmlFor="ruleDetails" fontWeight={'normal'}>
           Rule Details
         </FormLabel>
         <Textarea placeholder="" value={ruleDetails} onChange={onChangeRoleDetails} />
-      </FormControl>
+      </FormControl> */}
       <FormControl mt="2">
         <FormLabel htmlFor="date" fontWeight={'normal'}>
           Expire Time
@@ -151,27 +201,43 @@ const Form2 = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleClickConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
-  const [logo, setLogo] = useState<string>();
+  const [logo, setLogo] = useState<string>(getEventLogo());
   const [settlementAddress, setSettlementAddress] = useState<string>(getEventSettlementAddress());
-  const [singleAmount, setSingleAmount] = useState<number>(getEventSingleAmount());
-  const [capitalPoolAmount, setCapitalPoolAmount] = useState<number>(getEventCapitalPoolAmount());
+  // const [singleAmount, setSingleAmount] = useState<number>(getEventSingleAmount());
+  // const [capitalPoolAmount, setCapitalPoolAmount] = useState<number>(getEventCapitalPoolAmount());
   const [password, setPassword] = useState<string>(getEventPassword());
   const [confirmPassword, setConfirmPassword] = useState<string>(getEventConfirmPassword());
 
-  const onChangeLogo = (event: any) => {
-    setLogo(event.target.value);
-    setEventLogo(event.target.value);
+  const onChangeLogo = async (event: any) => {
+    const fileInput = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', fileInput);
+
+    try {
+      const response: any = await axios.post(Http.fileUpload, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.code === 10200 && response.result) {
+        setLogo(response.data.file_url);
+        setEventLogo(response.data.file_url);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const onChangeSingleAmount = (value: any) => {
-    setSingleAmount(value);
-    setEventSingleAmount(value);
-  };
+  // const onChangeSingleAmount = (value: any) => {
+  //   setSingleAmount(value);
+  //   setEventSingleAmount(value);
+  // };
 
-  const onChangeCapitalPoolAmount = (value: any) => {
-    setCapitalPoolAmount(value);
-    setEventCapitalPoolAmount(value);
-  };
+  // const onChangeCapitalPoolAmount = (value: any) => {
+  //   setCapitalPoolAmount(value);
+  //   setEventCapitalPoolAmount(value);
+  // };
 
   const onChangeSettlementAddress = (event: any) => {
     setSettlementAddress(event.target.value);
@@ -199,7 +265,7 @@ const Form2 = () => {
         </FormLabel>
         <SimpleGrid templateColumns="repeat(5, 1fr)">
           <GridItem colSpan={1}>
-            <Input size="md" type="file" onChange={onChangeLogo} value={logo} />
+            <Input size="md" type="file" onChange={onChangeLogo} />
           </GridItem>
           <GridItem colSpan={4} ml={10}>
             <Avatar size="lg" name="Prosper Otemuyiwa" src={logo} />
@@ -207,7 +273,7 @@ const Form2 = () => {
         </SimpleGrid>
       </FormControl>
 
-      <FormControl mt="2">
+      {/* <FormControl mt="2">
         <FormLabel htmlFor="singleAmount" fontWeight={'normal'}>
           Single amount
         </FormLabel>
@@ -218,9 +284,9 @@ const Form2 = () => {
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-      </FormControl>
+      </FormControl> */}
 
-      <FormControl mt="2">
+      {/* <FormControl mt="2">
         <FormLabel htmlFor="capitalPoolAmount" fontWeight={'normal'}>
           Capital Pool Amount
         </FormLabel>
@@ -231,7 +297,7 @@ const Form2 = () => {
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-      </FormControl>
+      </FormControl> */}
 
       <FormControl mt="2">
         <FormLabel htmlFor="settlementAddress" fontWeight={'normal'}>
@@ -302,26 +368,26 @@ const Form3 = () => {
           <Text>Play Type</Text>
           <Text>{getEventPlayType()}</Text>
         </SimpleGrid>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
+        {/* <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Rule Details</Text>
           <Text>{getEventRuleDetails()}</Text>
-        </SimpleGrid>
+        </SimpleGrid> */}
         <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Expire Time</Text>
           <Text>{getEventExpireTime().toLocaleString()}</Text>
         </SimpleGrid>
         <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Logo</Text>
-          <Text>{getEventLogo()}</Text>
+          <Avatar size="lg" name="Prosper Otemuyiwa" src={getEventLogo()} />
         </SimpleGrid>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
+        {/* <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Single amount</Text>
           <Text>{getEventSingleAmount()}</Text>
         </SimpleGrid>
         <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Capital Pool Amount</Text>
           <Text>{getEventCapitalPoolAmount()}</Text>
-        </SimpleGrid>
+        </SimpleGrid> */}
         <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Settlement Address</Text>
           <Text>{getEventSettlementAddress()}</Text>
@@ -339,6 +405,29 @@ const Post = () => {
   const toast = useToast();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(33.33);
+
+  const onClickPostEvent = async () => {
+    try {
+      const response: any = axios.post(Http.marketEvent, {
+        title: getEventTitle(),
+        expire_time: new Date(getEventExpireTime()).getTime(),
+        type: getEventType(),
+        play_type: getEventPlayType(),
+        event_logo: getEventLogo(),
+        settlement_address: getEventSettlementAddress(),
+        // capital_pool: getEventCapitalPoolAmount(),
+        resolver_address: getEventSettlementAddress(),
+        // rule_details: getEventRuleDetails(),
+        password: getEventPassword(),
+      });
+
+      if (response.code === 10200 && response.result) {
+        console.log('response.data', response.data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
@@ -394,15 +483,16 @@ const Post = () => {
                   w="7rem"
                   colorScheme="green"
                   variant="solid"
-                  onClick={() => {
-                    toast({
-                      title: 'Account created.',
-                      description: "We've created your account for you.",
-                      status: 'success',
-                      duration: 3000,
-                      isClosable: true,
-                    });
-                  }}
+                  onClick={
+                    onClickPostEvent
+                    // toast({
+                    //   title: 'Account created.',
+                    //   description: "We've created your account for you.",
+                    //   status: 'success',
+                    //   duration: 3000,
+                    //   isClosable: true,
+                    // });
+                  }
                 >
                   Submit
                 </Button>

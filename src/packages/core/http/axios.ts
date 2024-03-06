@@ -8,9 +8,15 @@ const baseHeader = {
 
 axios.interceptors.request.use(
   (config) => {
-    Object.entries(baseHeader).forEach(([key, value]) => {
-      config.headers.set(key, value);
-    });
+    if (!config.headers.get('Content-Type')) {
+      config.headers.set('Content-Type', 'application/json; charset=utf-8');
+    }
+
+    if (!config.headers.get('Accept')) {
+      config.headers.set('Accept', 'application/json');
+    }
+    // Object.entries(baseHeader).forEach(([key, value]) => {
+    // });
 
     const auth = getUserAuthorization();
     if (auth != '') {

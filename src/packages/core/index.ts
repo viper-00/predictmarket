@@ -86,8 +86,8 @@ export class Web3 {
       }
 
       return response;
-    } catch (err) {
-      throw new Error('do not update crypto price: ' + err);
+    } catch (e) {
+      throw new Error('do not update crypto price: ' + e);
     }
   }
 }

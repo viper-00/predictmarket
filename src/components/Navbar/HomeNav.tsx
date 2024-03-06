@@ -105,8 +105,8 @@ const HomeNav = () => {
           }));
           setNotification(nos);
         }
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
       }
     }
   };

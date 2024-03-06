@@ -21,6 +21,7 @@ export class Http {
   // event
   static marketEvent = this.httpPath + 'client/event/market-event';
   static marketEventPlay = this.httpPath + 'client/event/market-event-play';
+  static marketEventType = this.httpPath + 'client/event/market-event-type';
 
   // comment
   static marketEventComment = this.httpPath + 'client/event/comment/market-event-comment';
@@ -29,5 +30,5 @@ export class Http {
   static marketEventCommentLike = this.httpPath + 'client/event/comment/like/market-event-comment-like';
 
   // upload
-  static fileUpload = this.httpPath + 'client/upload';
+  static fileUpload = this.httpPath + 'client/upload/uploadFile';
 }

@@ -181,8 +181,8 @@ export class ETH {
       } else {
         throw new Error('Transaction not found.');
       }
-    } catch (error) {
-      throw new Error('Failed to retrieve transaction details.' + error);
+    } catch (e) {
+      throw new Error('Failed to retrieve transaction details.' + e);
     }
   }
 

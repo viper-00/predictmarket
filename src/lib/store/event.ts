@@ -5,11 +5,11 @@ interface EventPerisistState {
   title: string;
   type: string;
   playType: string;
-  ruleDetails: string;
+  // ruleDetails: string;
   expireTime: number;
   logo: string;
-  singleAmount: number;
-  capitalPoolAmount: number;
+  // singleAmount: number;
+  // capitalPoolAmount: number;
   settlementAddress: string;
   password: string;
   confirmPassword: string;
@@ -20,16 +20,16 @@ interface EventPerisistState {
   getType: () => string;
   setPlayType: (playType: string) => void;
   getPlayType: () => string;
-  setRuleDetails: (ruleDetails: string) => void;
-  getRuleDetails: () => string;
+  // setRuleDetails: (ruleDetails: string) => void;
+  // getRuleDetails: () => string;
   setExpireTime: (expireTime: number) => void;
   getExpireTime: () => number;
   setLogo: (logo: string) => void;
   getLogo: () => string;
-  setSingleAmount: (singleAmount: number) => void;
-  getSingleAmount: () => number;
-  setCapitalPoolAmount: (capitalPoolAmount: number) => void;
-  getCapitalPoolAmount: () => number;
+  // setSingleAmount: (singleAmount: number) => void;
+  // getSingleAmount: () => number;
+  // setCapitalPoolAmount: (capitalPoolAmount: number) => void;
+  // getCapitalPoolAmount: () => number;
   setSettlementAddress: (settlementAddress: string) => void;
   getSettlementAddress: () => string;
   setPassword: (password: string) => void;
@@ -46,11 +46,11 @@ export const useEventPerisistStore = create(
       title: '',
       type: '',
       playType: '',
-      ruleDetails: '',
+      // ruleDetails: '',
       expireTime: 0,
       logo: '',
-      singleAmount: 0,
-      capitalPoolAmount: 0,
+      // singleAmount: 0,
+      // capitalPoolAmount: 0,
       settlementAddress: '',
       password: '',
       confirmPassword: '',
@@ -60,16 +60,16 @@ export const useEventPerisistStore = create(
       getType: () => get().type,
       setPlayType: (value) => set(() => ({ playType: value })),
       getPlayType: () => get().playType,
-      setRuleDetails: (value) => set(() => ({ ruleDetails: value })),
-      getRuleDetails: () => get().ruleDetails,
+      // setRuleDetails: (value) => set(() => ({ ruleDetails: value })),
+      // getRuleDetails: () => get().ruleDetails,
       setExpireTime: (value) => set(() => ({ expireTime: value })),
       getExpireTime: () => get().expireTime,
       setLogo: (value) => set(() => ({ logo: value })),
       getLogo: () => get().logo,
-      setSingleAmount: (value) => set(() => ({ singleAmount: value })),
-      getSingleAmount: () => get().singleAmount,
-      setCapitalPoolAmount: (value) => set(() => ({ capitalPoolAmount: value })),
-      getCapitalPoolAmount: () => get().capitalPoolAmount,
+      // setSingleAmount: (value) => set(() => ({ singleAmount: value })),
+      // getSingleAmount: () => get().singleAmount,
+      // setCapitalPoolAmount: (value) => set(() => ({ capitalPoolAmount: value })),
+      // getCapitalPoolAmount: () => get().capitalPoolAmount,
       setSettlementAddress: (value) => set(() => ({ settlementAddress: value })),
       getSettlementAddress: () => get().settlementAddress,
       setPassword: (value) => set(() => ({ password: value })),
@@ -83,11 +83,11 @@ export const useEventPerisistStore = create(
             title: '',
             type: '',
             playType: '',
-            ruleDetails: '',
+            // ruleDetails: '',
             expireTime: 0,
             logo: '',
-            singleAmount: 0,
-            capitalPoolAmount: 0,
+            // singleAmount: 0,
+            // capitalPoolAmount: 0,
             settlementAddress: '',
             password: '',
             confirmPassword: '',
@@ -112,8 +112,8 @@ export const getEventType = () => useEventPerisistStore.getState().getType();
 export const setEventPlayType = (value: string) => useEventPerisistStore.getState().setPlayType(value);
 export const getEventPlayType = () => useEventPerisistStore.getState().getPlayType();
 
-export const setEventRuleDetails = (value: string) => useEventPerisistStore.getState().setRuleDetails(value);
-export const getEventRuleDetails = () => useEventPerisistStore.getState().getRuleDetails();
+// export const setEventRuleDetails = (value: string) => useEventPerisistStore.getState().setRuleDetails(value);
+// export const getEventRuleDetails = () => useEventPerisistStore.getState().getRuleDetails();
 
 export const setEventExpireTime = (value: number) => useEventPerisistStore.getState().setExpireTime(value);
 export const getEventExpireTime = () => useEventPerisistStore.getState().getExpireTime();
@@ -121,12 +121,12 @@ export const getEventExpireTime = () => useEventPerisistStore.getState().getExpi
 export const setEventLogo = (value: string) => useEventPerisistStore.getState().setLogo(value);
 export const getEventLogo = () => useEventPerisistStore.getState().getLogo();
 
-export const setEventSingleAmount = (value: number) => useEventPerisistStore.getState().setSingleAmount(value);
-export const getEventSingleAmount = () => useEventPerisistStore.getState().getSingleAmount();
+// export const setEventSingleAmount = (value: number) => useEventPerisistStore.getState().setSingleAmount(value);
+// export const getEventSingleAmount = () => useEventPerisistStore.getState().getSingleAmount();
 
-export const setEventCapitalPoolAmount = (value: number) =>
-  useEventPerisistStore.getState().setCapitalPoolAmount(value);
-export const getEventCapitalPoolAmount = () => useEventPerisistStore.getState().getCapitalPoolAmount();
+// export const setEventCapitalPoolAmount = (value: number) =>
+//   useEventPerisistStore.getState().setCapitalPoolAmount(value);
+// export const getEventCapitalPoolAmount = () => useEventPerisistStore.getState().getCapitalPoolAmount();
 
 export const setEventSettlementAddress = (value: string) =>
   useEventPerisistStore.getState().setSettlementAddress(value);

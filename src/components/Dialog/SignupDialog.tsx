@@ -77,8 +77,8 @@ const SignupDialog = (props: Props) => {
           isClosable: true,
         });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
     }
   };
 

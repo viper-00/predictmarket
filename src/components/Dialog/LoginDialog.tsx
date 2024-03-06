@@ -119,8 +119,8 @@ const LoginDialog = (props: Props) => {
           });
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
     }
   };
 

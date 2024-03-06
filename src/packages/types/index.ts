@@ -119,3 +119,12 @@ export type UserCoinBalance = {
   usdt: string;
   usdc: string;
 };
+
+export type EventPlayType = {
+  title: string;
+  introduce: string;
+  guessNumber: number;
+  minimumCapitalPool: number;
+  maximumCapitalPool: number;
+  coin: string;
+};
