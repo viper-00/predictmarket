@@ -128,3 +128,16 @@ export type EventPlayType = {
   maximumCapitalPool: number;
   coin: string;
 };
+
+export type EventType = {
+  createdTime: number;
+  eventLogo: string;
+  eventStatus: number;
+  expireTime: number;
+  playId: number;
+  rosolverAddress: string;
+  settlementAddress: string;
+  title: string;
+  uniqueCode: string;
+  type: string;
+};

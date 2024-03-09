@@ -43,6 +43,7 @@ import {
   // getEventSingleAmount,
   getEventTitle,
   getEventType,
+  resetEvent,
   // setEventCapitalPoolAmount,
   setEventConfirmPassword,
   setEventExpireTime,
@@ -408,7 +409,7 @@ const Post = () => {
 
   const onClickPostEvent = async () => {
     try {
-      const response: any = axios.post(Http.marketEvent, {
+      const response: any = await axios.post(Http.marketEvent, {
         title: getEventTitle(),
         expire_time: new Date(getEventExpireTime()).getTime(),
         type: getEventType(),
@@ -422,7 +423,8 @@ const Post = () => {
       });
 
       if (response.code === 10200 && response.result) {
-        console.log('response.data', response.data);
+        resetEvent();
+        window.location.href = '/event/' + response.data.unique_code;
       }
     } catch (e) {
       console.error(e);
