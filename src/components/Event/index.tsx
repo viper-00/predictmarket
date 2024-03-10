@@ -57,7 +57,7 @@ import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { EventPlayType, EventType } from 'packages/types';
+import { EventOrder, EventOrderStringType, EventOrderType, EventPlayType, EventType } from 'packages/types';
 import { formatTimestamp } from 'utils/format';
 import { CiStar } from 'react-icons/ci';
 import { FaLink } from 'react-icons/fa6';
@@ -74,14 +74,27 @@ const Event = () => {
 
   const [event, setEvent] = useState<EventType>();
   const [eventPlay, setEventPlay] = useState<EventPlayType>();
+  const [eventOrder, setEventOrder] = useState<EventOrder[]>([]);
   const [currentOrder, setCurrentOrder] = useState<string>();
+  const [currentAmount, setCurrentAmount] = useState<number>(0);
+  const [balance, setBalance] = useState<number>(100);
+  const [currentOrderStatus, setCurrentOrderStatus] = useState<EventOrderStringType>(EventOrderStringType.buy);
+
+  const onChangeDec = () => {
+    const value = (currentAmount as number) - 1;
+    if (value >= (eventPlay?.minimumCapitalPool as number)) {
+      setCurrentAmount(value);
+    }
+  };
+
+  const onChangeInc = () => {
+    const value = (currentAmount as number) + 1;
+    if (value <= (eventPlay?.maximumCapitalPool as number)) {
+      setCurrentAmount(value);
+    }
+  };
 
   useEffect(() => {
-    async function play() {
-      const response: any = await axios.get(Http.marketEventPlay, {
-        params: {},
-      });
-    }
     async function init() {
       const response: any = await axios.get(Http.marketEvent, {
         params: {
@@ -92,6 +105,25 @@ const Event = () => {
         const eventResult = response.data.event;
         const playResult = response.data.play;
         const commentResult = response.data.comment;
+        // const orderResult = response.data.order;
+
+        // if (orderResult) {
+        //   let orders: EventOrder[] = [];
+
+        //   for (const element of orderResult) {
+        //     let order: EventOrder = {
+        //       amount: element.amount,
+        //       orderType: element.play_value,
+        //       playValue: element.order_type,
+        //       userAddress: element.user_address,
+        //       username: element.username,
+        //     };
+
+        //     orders.push(order);
+        //   }
+
+        //   setEventOrder(orders);
+        // }
 
         if (eventResult) {
           let e: EventType = {
@@ -117,9 +149,15 @@ const Event = () => {
             minimumCapitalPool: playResult.minimum_capital_pool,
             maximumCapitalPool: playResult.maximum_capital_pool,
             coin: playResult.coin,
+            pledgeAmount: playResult.pledge_amount,
+            values: playResult.values,
           };
           setEventPlay(t);
+          setCurrentAmount(t.minimumCapitalPool);
+          // setCurrentOrder(t.values[0].value);
         }
+
+        console.log('playResult', playResult);
       }
     }
     if (id && id !== '') {
@@ -131,19 +169,39 @@ const Event = () => {
 
   const handleClickPostComment = async () => {};
 
-  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } = useNumberInput({
-    // step: 0.01,
-    defaultValue: eventPlay?.guessNumber,
-    // min: 1,
-    // max: 6,
-    // precision: 2,
-  });
+  const onChangeCurrentAmount = (event: any) => {
+    if (
+      (eventPlay?.minimumCapitalPool as number) <= event.target.value &&
+      (eventPlay?.maximumCapitalPool as number) >= event.target.value
+    )
+      setCurrentAmount(event.target.value);
+  };
 
-  const inc = getIncrementButtonProps();
-  const dec = getDecrementButtonProps();
-  const input = getInputProps();
+  const onClickBuy = async () => {
+    try {
+      const response: any = await axios.post(Http.marketEventOrder, {
+        event_unique_code: event?.uniqueCode,
+        amount: currentAmount,
+        play_value: currentOrder,
+        type: EventOrderType[currentOrderStatus],
+      });
 
-  const items = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+      console.log('responseresponseresponse', response);
+
+      if (response.code === 10200 && response.result) {
+        toast({
+          title: `Successful purchase`,
+          status: 'success',
+          isClosable: true,
+        });
+        window.location.reload();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onClickSell = async () => {};
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
@@ -160,7 +218,7 @@ const Event = () => {
                     <Text backgroundColor={'#f2f2f2'} fontSize={14} px={2} py={1}>
                       {event?.type}
                     </Text>
-                    <Text ml={4}>{event?.expireTime as number}</Text>
+                    <Text ml={4}>{formatTimestamp(new Date(event?.expireTime as number).getTime())}</Text>
                   </Flex>
                   <Text fontWeight={'bold'} fontSize={20} mt={2}>
                     {event?.title}
@@ -186,18 +244,31 @@ const Event = () => {
             </Flex>
             <Box mt={10}>
               <Grid templateColumns="repeat(4, 1fr)" gap={2} rowGap={8} textAlign="center">
-                {items &&
-                  items.map((item, index) => (
+                {eventPlay?.values &&
+                  eventPlay.values.map((item, index) => (
                     <GridItem colSpan={1} key={index}>
-                      <Button
-                        colorScheme="teal"
-                        size="lg"
-                        onClick={() => {
-                          setCurrentOrder(item);
-                        }}
-                      >
-                        {item}
-                      </Button>
+                      {item.orders && item.orders.length > 0 ? (
+                        <>
+                          <Button colorScheme="red" size="lg" isDisabled>
+                            {item.value}
+                          </Button>
+                          <Text fontSize={14} fontWeight={'bold'}>
+                            Traded
+                          </Text>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            colorScheme="teal"
+                            size="lg"
+                            onClick={() => {
+                              setCurrentOrder(item.value);
+                            }}
+                          >
+                            {item.value}
+                          </Button>
+                        </>
+                      )}
                     </GridItem>
                   ))}
               </Grid>
@@ -609,19 +680,54 @@ const Event = () => {
                   </Flex>
                   <Flex mt={4} px={5} justifyContent="space-between" alignItems={'flex-start'} borderBottomWidth={1}>
                     <Flex alignItems={'center'}>
-                      <Link href="#" style={{ textDecoration: 'none' }}>
+                      <Link
+                        href="#"
+                        style={{ textDecoration: 'none' }}
+                        onClick={() => {
+                          setCurrentOrderStatus(EventOrderStringType.buy);
+                        }}
+                      >
                         <Text
                           height={38}
-                          fontWeight="bold"
-                          borderBottomWidth={1}
-                          borderColor={'#1652f0'}
-                          color={'#1652f0'}
+                          fontWeight={
+                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? 'bold' : ''
+                          }
+                          borderBottomWidth={
+                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? 1 : 0
+                          }
+                          borderColor={
+                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? '#1652f0' : ''
+                          }
+                          color={EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? '#1652f0' : ''}
                         >
                           Buy
                         </Text>
                       </Link>
-                      <Link href="#" style={{ textDecoration: 'none' }} ml={6}>
-                        <Text height={38}>Sell</Text>
+                      <Link
+                        href="#"
+                        style={{ textDecoration: 'none' }}
+                        ml={6}
+                        onClick={() => {
+                          setCurrentOrderStatus(EventOrderStringType.sell);
+                        }}
+                      >
+                        <Text
+                          height={38}
+                          fontWeight={
+                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? 'bold' : ''
+                          }
+                          borderBottomWidth={
+                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? 1 : 0
+                          }
+                          borderColor={
+                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? '#1652f0' : ''
+                          }
+                          color={
+                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? '#1652f0' : ''
+                          }
+                        >
+                          Sell
+                        </Text>
                       </Link>
                     </Flex>
                     <Select variant="unstyled" width={24}>
@@ -636,25 +742,42 @@ const Event = () => {
                       <Text>Amount</Text>
                       <Flex alignItems={'center'}>
                         <Text backgroundColor={'#f2f2f2'} borderRadius={10} px={2} mr={2} fontSize={14}>
-                          Balance $0.00
+                          Balance ${balance}
                         </Text>
-                        <Button colorScheme="gray" size={'xs'}>
+                        <Button
+                          colorScheme="gray"
+                          size={'xs'}
+                          onClick={() => {
+                            setCurrentAmount(eventPlay?.maximumCapitalPool as number);
+                          }}
+                        >
                           Max
                         </Button>
                       </Flex>
                     </Flex>
 
                     <HStack mt={4}>
-                      <Button {...dec}>-</Button>
-                      <Input {...input} value={eventPlay?.guessNumber} />
-                      <Button {...inc}>+</Button>
+                      <Button onClick={onChangeDec}>-</Button>
+                      <Input value={currentAmount} onChange={onChangeCurrentAmount} textAlign={'center'} />
+                      <Button onClick={onChangeInc}>+</Button>
                     </HStack>
-                    <Text fontSize={14} color={'red'} py={2}>
-                      Insufficient balance
-                    </Text>
-                    <Button colorScheme="blue" mt={2} width={'100%'}>
-                      Buy
-                    </Button>
+
+                    {balance < (eventPlay?.guessNumber as number) && (
+                      <Text fontSize={14} color={'red'} py={2}>
+                        Insufficient balance
+                      </Text>
+                    )}
+
+                    {EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy && (
+                      <Button colorScheme="blue" mt={5} width={'100%'} onClick={onClickBuy}>
+                        Buy
+                      </Button>
+                    )}
+                    {EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell && (
+                      <Button colorScheme="red" mt={5} width={'100%'} onClick={onClickSell}>
+                        Sell
+                      </Button>
+                    )}
 
                     <Box mt={6}>
                       <Flex justifyContent={'space-between'}>
@@ -679,6 +802,14 @@ const Event = () => {
                         </Text>
                         <Text>
                           {eventPlay?.maximumCapitalPool} {eventPlay?.coin}
+                        </Text>
+                      </Flex>
+                      <Flex justifyContent={'space-between'}>
+                        <Text fontSize={14} color={'#828282'}>
+                          Pledge amount
+                        </Text>
+                        <Text>
+                          {eventPlay?.pledgeAmount} {eventPlay?.coin}
                         </Text>
                       </Flex>
                     </Box>

@@ -127,6 +127,13 @@ export type EventPlayType = {
   minimumCapitalPool: number;
   maximumCapitalPool: number;
   coin: string;
+  pledgeAmount: number;
+  values: EventPlayValueType[];
+};
+
+export type EventPlayValueType = {
+  value: string;
+  orders: EventOrder[];
 };
 
 export type EventType = {
@@ -140,4 +147,21 @@ export type EventType = {
   title: string;
   uniqueCode: string;
   type: string;
+};
+
+export enum EventOrderType {
+  buy = 1,
+  sell = 2,
+}
+
+export enum EventOrderStringType {
+  buy = 'buy',
+  sell = 'sell',
+}
+
+export type EventOrder = {
+  amount: number;
+  orderType: string;
+  userAddress: string;
+  username: string;
 };

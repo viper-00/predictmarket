@@ -120,6 +120,7 @@ const Form1 = () => {
               minimumCapitalPool: item.minimum_capital_pool,
               maximumCapitalPool: item.maximum_capital_pool,
               coin: item.coin,
+              pledgeAmount: item.pledge_amount,
             });
           });
           setPlayTypeList(plays);
@@ -142,7 +143,7 @@ const Form1 = () => {
         <FormLabel htmlFor="title" fontWeight={'normal'}>
           Title
         </FormLabel>
-        <Input id="title" type="text" onChange={onChangeTitle} value={title} />
+        <Input id="title" type="text" onChange={onChangeTitle} value={title} placeholder="Enter title" />
         {/* <FormHelperText>We&apos;ll never share your email.</FormHelperText> */}
       </FormControl>
 
@@ -304,7 +305,13 @@ const Form2 = () => {
         <FormLabel htmlFor="settlementAddress" fontWeight={'normal'}>
           Settlement Address
         </FormLabel>
-        <Input id="settlementAddress" type="text" value={settlementAddress} onChange={onChangeSettlementAddress} />
+        <Input
+          id="settlementAddress"
+          type="text"
+          value={settlementAddress}
+          onChange={onChangeSettlementAddress}
+          placeholder={'Enter settlement address'}
+        />
       </FormControl>
 
       <FormControl mt="2">
@@ -356,48 +363,27 @@ const Form3 = () => {
       <Heading w="100%" textAlign={'center'} fontWeight="normal">
         Confirm Event
       </Heading>
-      <Box mt={5}>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
+      <Flex mt={5} alignItems={'flex-start'}>
+        <SimpleGrid rowGap={10}>
+          <Text height={50}>Logo</Text>
           <Text>Title</Text>
-          <Text>{getEventTitle()}</Text>
-        </SimpleGrid>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Type</Text>
-          <Text>{getEventType()}</Text>
-        </SimpleGrid>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Play Type</Text>
-          <Text>{getEventPlayType()}</Text>
-        </SimpleGrid>
-        {/* <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
-          <Text>Rule Details</Text>
-          <Text>{getEventRuleDetails()}</Text>
-        </SimpleGrid> */}
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Expire Time</Text>
-          <Text>{getEventExpireTime().toLocaleString()}</Text>
-        </SimpleGrid>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
-          <Text>Logo</Text>
-          <Avatar size="lg" name="Prosper Otemuyiwa" src={getEventLogo()} />
-        </SimpleGrid>
-        {/* <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
-          <Text>Single amount</Text>
-          <Text>{getEventSingleAmount()}</Text>
-        </SimpleGrid>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
-          <Text>Capital Pool Amount</Text>
-          <Text>{getEventCapitalPoolAmount()}</Text>
-        </SimpleGrid> */}
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Settlement Address</Text>
-          <Text>{getEventSettlementAddress()}</Text>
-        </SimpleGrid>
-        <SimpleGrid templateColumns="repeat(4, 1fr)" spacing={1} mt={2}>
           <Text>Password</Text>
+        </SimpleGrid>
+
+        <SimpleGrid rowGap={10} ml={10}>
+          <Avatar size="md" name="Prosper Otemuyiwa" src={getEventLogo()} height={50} />
+          <Text>{getEventTitle()}</Text>
+          <Text>{getEventType()}</Text>
+          <Text>{getEventPlayType()}</Text>
+          <Text>{getEventExpireTime().toLocaleString()}</Text>
+          <Text>{getEventSettlementAddress()}</Text>
           <Text>{getEventPassword()}</Text>
         </SimpleGrid>
-      </Box>
+      </Flex>
     </>
   );
 };
