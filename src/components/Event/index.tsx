@@ -57,7 +57,14 @@ import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { EventOrder, EventOrderStringType, EventOrderType, EventPlayType, EventType } from 'packages/types';
+import {
+  EventOrder,
+  EventOrderStringType,
+  EventOrderType,
+  EventPlayType,
+  EventPlayValueType,
+  EventType,
+} from 'packages/types';
 import { formatTimestamp } from 'utils/format';
 import { CiStar } from 'react-icons/ci';
 import { FaLink } from 'react-icons/fa6';
@@ -65,6 +72,8 @@ import { FaHammer } from 'react-icons/fa';
 import { FcLikePlaceholder } from 'react-icons/fc';
 import { FcLike } from 'react-icons/fc';
 import { ChevronDownIcon } from '@chakra-ui/icons';
+import { getUserAuthorization } from 'lib/store/user';
+import { getUsdtBalance } from 'lib/store/balance';
 
 const Event = () => {
   const {
@@ -77,8 +86,9 @@ const Event = () => {
   const [eventOrder, setEventOrder] = useState<EventOrder[]>([]);
   const [currentOrder, setCurrentOrder] = useState<string>();
   const [currentAmount, setCurrentAmount] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(100);
   const [currentOrderStatus, setCurrentOrderStatus] = useState<EventOrderStringType>(EventOrderStringType.buy);
+  const [usdtBalance, setUsdtBalance] = useState<string>('0');
+  const [payLoading, setPayLoading] = useState<boolean>(false);
 
   const onChangeDec = () => {
     const value = (currentAmount as number) - 1;
@@ -96,6 +106,8 @@ const Event = () => {
 
   useEffect(() => {
     async function init() {
+      setUsdtBalance(getUsdtBalance());
+
       const response: any = await axios.get(Http.marketEvent, {
         params: {
           code: id,
@@ -142,6 +154,36 @@ const Event = () => {
         }
 
         if (playResult) {
+          let values: EventPlayValueType[] = [];
+
+          if (playResult.values) {
+            for (const element of playResult.values) {
+              let e: EventPlayValueType = {
+                value: element.value,
+                orders: [],
+              };
+
+              var orders: EventOrder[] = [];
+
+              if (element.orders && element.orders.length > 0) {
+                for (const orderElement of element.orders) {
+                  let order: EventOrder = {
+                    amount: orderElement.amount,
+                    orderType: orderElement.order_type,
+                    userAddress: orderElement.user_address,
+                    username: orderElement.username,
+                  };
+
+                  orders.push(order);
+                }
+              }
+
+              e.orders = orders;
+
+              values.push(e);
+            }
+          }
+
           let t: EventPlayType = {
             title: playResult.title,
             introduce: playResult.introduce,
@@ -150,14 +192,12 @@ const Event = () => {
             maximumCapitalPool: playResult.maximum_capital_pool,
             coin: playResult.coin,
             pledgeAmount: playResult.pledge_amount,
-            values: playResult.values,
+            values: values,
           };
           setEventPlay(t);
           setCurrentAmount(t.minimumCapitalPool);
           // setCurrentOrder(t.values[0].value);
         }
-
-        console.log('playResult', playResult);
       }
     }
     if (id && id !== '') {
@@ -179,14 +219,13 @@ const Event = () => {
 
   const onClickBuy = async () => {
     try {
+      setPayLoading(true);
       const response: any = await axios.post(Http.marketEventOrder, {
         event_unique_code: event?.uniqueCode,
         amount: currentAmount,
         play_value: currentOrder,
         type: EventOrderType[currentOrderStatus],
       });
-
-      console.log('responseresponseresponse', response);
 
       if (response.code === 10200 && response.result) {
         toast({
@@ -198,6 +237,8 @@ const Event = () => {
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      setPayLoading(false);
     }
   };
 
@@ -252,9 +293,11 @@ const Event = () => {
                           <Button colorScheme="red" size="lg" isDisabled>
                             {item.value}
                           </Button>
-                          <Text fontSize={14} fontWeight={'bold'}>
-                            Traded
-                          </Text>
+                          <Link href={window.location.origin + '/profile/' + item.orders[0].userAddress}>
+                            <Text fontSize={14} fontWeight={'bold'}>
+                              ({item.orders[0].orderType.toUpperCase()}) {item.orders[0].username}
+                            </Text>
+                          </Link>
                         </>
                       ) : (
                         <>
@@ -742,7 +785,7 @@ const Event = () => {
                       <Text>Amount</Text>
                       <Flex alignItems={'center'}>
                         <Text backgroundColor={'#f2f2f2'} borderRadius={10} px={2} mr={2} fontSize={14}>
-                          Balance ${balance}
+                          Balance {usdtBalance}
                         </Text>
                         <Button
                           colorScheme="gray"
@@ -762,14 +805,14 @@ const Event = () => {
                       <Button onClick={onChangeInc}>+</Button>
                     </HStack>
 
-                    {balance < (eventPlay?.guessNumber as number) && (
+                    {Number(usdtBalance) < (eventPlay?.guessNumber as number) && (
                       <Text fontSize={14} color={'red'} py={2}>
                         Insufficient balance
                       </Text>
                     )}
 
                     {EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy && (
-                      <Button colorScheme="blue" mt={5} width={'100%'} onClick={onClickBuy}>
+                      <Button colorScheme="blue" mt={5} width={'100%'} onClick={onClickBuy} isLoading={payLoading}>
                         Buy
                       </Button>
                     )}

@@ -4,6 +4,11 @@ import { useEffect } from 'react';
 import { tokenList } from 'packages/constants/tokenList';
 import Providers from 'components/Common/Providers';
 import { walletFont } from 'packages/font';
+import { getUserAuthorization } from 'lib/store/user';
+import axios from 'packages/core/http/axios';
+import { Http } from 'packages/core/http/http';
+import { UserCoinBalance } from 'packages/types';
+import { setEthBalance, setUsdcBalance, setUsdtBalance } from 'lib/store/balance';
 
 // async function init() {
 //   // const result = await Web3.getTransactionList(Chain.ETH, "0x79D9c06Bf20b7292F199872d4C4711206AdD1f1b")
@@ -42,16 +47,24 @@ import { walletFont } from 'packages/font';
 // });
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
-  // useEffect(() => {
-  //   const updateCoinPrice = setInterval(async () => {
-  //     const ids: string[] = tokenList.map((token) => token.ids);
-  //     await Web3.updateCryptoPrice(ids);
-  //   }, 1000 * 10);
+  const updateBalance = async () => {
+    if (getUserAuthorization() !== '') {
+      const response: any = await axios.get(Http.userBalance);
+      if (response.code === 10200 && response.result) {
+        setEthBalance(response.data.eth);
+        setUsdtBalance(response.data.usdt);
+        setUsdcBalance(response.data.usdc);
+      }
+    }
+  };
 
-  //   return () => {
-  //     clearInterval(updateCoinPrice);
-  //   };
-  // }, []);
+  useEffect(() => {
+    const updateCoinPrice = setInterval(updateBalance, 1000 * 10);
+
+    return () => {
+      clearInterval(updateCoinPrice);
+    };
+  }, []);
 
   return (
     <Providers>

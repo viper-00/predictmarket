@@ -46,31 +46,20 @@ import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { UserCoinBalance } from 'packages/types';
 import { OP_SCAN_LINK } from 'packages/constants';
+import { getEthBalance, getUsdcBalance, getUsdtBalance } from 'lib/store/balance';
 
 const Wallet = () => {
   const [contractAddress, setContractAddress] = useState<string>('');
-  const [balance, setBalance] = useState<UserCoinBalance>();
+  const [ethBalance, setEthBalance] = useState<string>('0');
+  const [usdtBalance, setUsdtBalance] = useState<string>('0');
 
   const toast = useToast();
 
   useEffect(() => {
     setContractAddress(getUserContractAddress());
-    updateBalance()
+    setEthBalance(getEthBalance())
+    setUsdtBalance(getUsdtBalance())
   }, []);
-
-  const updateBalance = async () => {
-    if (getUserAuthorization() !== '') {
-      const response: any = await axios.get(Http.userBalance);
-      if (response.code === 10200 && response.result) {
-        const coinBalance: UserCoinBalance = {
-          eth: response.data.eth,
-          usdt: response.data.usdt,
-          usdc: response.data.usdc,
-        };
-        setBalance(coinBalance);
-      }
-    }
-  };
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
@@ -242,7 +231,7 @@ const Wallet = () => {
                     mr={2}
                     borderRadius={50}
                     variant="outline"
-                    onClick={updateBalance}
+                    onClick={() => {}}
                   />
                   <Menu>
                     <MenuButton
@@ -255,7 +244,13 @@ const Wallet = () => {
                     <MenuList>
                       <MenuItem>Export private key</MenuItem>
                       <MenuItem>
-                      <Link href={`${OP_SCAN_LINK}/${contractAddress}`} target={'_blank'} style={{textDecoration: 'none'}}>Optimismscan</Link>
+                        <Link
+                          href={`${OP_SCAN_LINK}/${contractAddress}`}
+                          target={'_blank'}
+                          style={{ textDecoration: 'none' }}
+                        >
+                          Optimismscan
+                        </Link>
                       </MenuItem>
                     </MenuList>
                   </Menu>
@@ -269,20 +264,20 @@ const Wallet = () => {
                   <Text fontWeight={'bold'} fontSize={20}>
                     (USDT)
                   </Text>
-                  <Text fontWeight={'bold'} fontSize={20}>
+                  {/* <Text fontWeight={'bold'} fontSize={20}>
                     (USDC)
-                  </Text>
+                  </Text> */}
                 </Box>
                 <Box ml={2}>
                   <Text fontWeight={'bold'} fontSize={20}>
-                    {balance?.eth}
+                    {ethBalance}
                   </Text>
                   <Text fontWeight={'bold'} fontSize={20}>
-                    {balance?.usdt}
+                    {usdtBalance}
                   </Text>
-                  <Text fontWeight={'bold'} fontSize={20}>
-                    {balance?.usdc}
-                  </Text>
+                  {/* <Text fontWeight={'bold'} fontSize={20}>
+                    {getUsdcBalance()}
+                  </Text> */}
                 </Box>
               </Flex>
             </Box>
