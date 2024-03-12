@@ -72,7 +72,7 @@ import { FaHammer } from 'react-icons/fa';
 import { FcLikePlaceholder } from 'react-icons/fc';
 import { FcLike } from 'react-icons/fc';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import { getUserAuthorization } from 'lib/store/user';
+import { getUserAuthorization, getUserContractAddress, setUserContractAddress } from 'lib/store/user';
 import { getUsdtBalance } from 'lib/store/balance';
 
 const Event = () => {
@@ -83,30 +83,33 @@ const Event = () => {
 
   const [event, setEvent] = useState<EventType>();
   const [eventPlay, setEventPlay] = useState<EventPlayType>();
-  const [eventOrder, setEventOrder] = useState<EventOrder[]>([]);
-  const [currentOrder, setCurrentOrder] = useState<string>();
-  const [currentAmount, setCurrentAmount] = useState<number>(0);
+  const [currentEventPlay, setCurrentEventPlay] = useState<EventPlayValueType>();
+  // const [currentOrder, setCurrentOrder] = useState<string>();
+  const [currentAmount, setCurrentAmount] = useState<string>('');
   const [currentOrderStatus, setCurrentOrderStatus] = useState<EventOrderStringType>(EventOrderStringType.buy);
   const [usdtBalance, setUsdtBalance] = useState<string>('0');
   const [payLoading, setPayLoading] = useState<boolean>(false);
+  const [sellLoading, setSellLoading] = useState<boolean>(false);
+  const [userAddress, setUserAddress] = useState<string>('');
 
   const onChangeDec = () => {
-    const value = (currentAmount as number) - 1;
+    const value = parseFloat(currentAmount) - 1;
     if (value >= (eventPlay?.minimumCapitalPool as number)) {
-      setCurrentAmount(value);
+      setCurrentAmount(value.toString());
     }
   };
 
   const onChangeInc = () => {
-    const value = (currentAmount as number) + 1;
+    const value = parseFloat(currentAmount) + 1;
     if (value <= (eventPlay?.maximumCapitalPool as number)) {
-      setCurrentAmount(value);
+      setCurrentAmount(value.toString());
     }
   };
 
   useEffect(() => {
     async function init() {
       setUsdtBalance(getUsdtBalance());
+      setUserAddress(getUserContractAddress());
 
       const response: any = await axios.get(Http.marketEvent, {
         params: {
@@ -195,7 +198,7 @@ const Event = () => {
             values: values,
           };
           setEventPlay(t);
-          setCurrentAmount(t.minimumCapitalPool);
+          setCurrentAmount(t.minimumCapitalPool.toString());
           // setCurrentOrder(t.values[0].value);
         }
       }
@@ -222,8 +225,8 @@ const Event = () => {
       setPayLoading(true);
       const response: any = await axios.post(Http.marketEventOrder, {
         event_unique_code: event?.uniqueCode,
-        amount: currentAmount,
-        play_value: currentOrder,
+        amount: parseFloat(currentAmount),
+        play_value: currentEventPlay?.value,
         type: EventOrderType[currentOrderStatus],
       });
 
@@ -242,7 +245,29 @@ const Event = () => {
     }
   };
 
-  const onClickSell = async () => {};
+  const onClickSell = async () => {
+    try {
+      setSellLoading(true);
+      const response: any = await axios.post(Http.marketEventOrder, {
+        event_unique_code: event?.uniqueCode,
+        play_value: currentEventPlay?.value,
+        type: EventOrderType[currentOrderStatus],
+      });
+
+      if (response.code === 10200 && response.result) {
+        toast({
+          title: `Successfully sell`,
+          status: 'success',
+          isClosable: true,
+        });
+        window.location.reload();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSellLoading(false);
+    }
+  };
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
@@ -288,14 +313,32 @@ const Event = () => {
                 {eventPlay?.values &&
                   eventPlay.values.map((item, index) => (
                     <GridItem colSpan={1} key={index}>
-                      {item.orders && item.orders.length > 0 ? (
+                      {item.orders &&
+                      item.orders.length > 0 &&
+                      item.orders[0].orderType === EventOrderStringType.buy ? (
                         <>
-                          <Button colorScheme="red" size="lg" isDisabled>
+                          <Button
+                            colorScheme="red"
+                            size="lg"
+                            isDisabled={item.orders[0].userAddress === userAddress ? false : true}
+                            onClick={() => {
+                              setCurrentEventPlay(item);
+                              if (item.orders[0].userAddress === userAddress) {
+                                if (item.orders[0].orderType === EventOrderStringType.buy) {
+                                  setCurrentOrderStatus(EventOrderStringType.sell);
+                                  setCurrentAmount(item.orders[0].amount.toString());
+                                } else if (item.orders[0].orderType === EventOrderStringType.sell) {
+                                  setCurrentOrderStatus(EventOrderStringType.buy);
+                                }
+                              }
+                            }}
+                          >
                             {item.value}
                           </Button>
+
                           <Link href={window.location.origin + '/profile/' + item.orders[0].userAddress}>
                             <Text fontSize={14} fontWeight={'bold'}>
-                              ({item.orders[0].orderType.toUpperCase()}) {item.orders[0].username}
+                              {item.orders[0].username} || USDT({item.orders[0].amount})
                             </Text>
                           </Link>
                         </>
@@ -305,7 +348,8 @@ const Event = () => {
                             colorScheme="teal"
                             size="lg"
                             onClick={() => {
-                              setCurrentOrder(item.value);
+                              setCurrentEventPlay(item);
+                              setCurrentOrderStatus(EventOrderStringType.buy);
                             }}
                           >
                             {item.value}
@@ -711,67 +755,59 @@ const Event = () => {
             </Box>
           </GridItem>
 
-          <GridItem colSpan={1}>
+          <GridItem colSpan={1} display={currentEventPlay ? 'block' : 'none'}>
             <Box position="fixed">
               <Card maxW="sm">
                 <CardBody px={0}>
                   <Flex alignItems={'center'} px={5}>
                     <Avatar size="md" name="Event logo" src={event?.eventLogo} />
                     <Text fontWeight={'bold'} ml={3}>
-                      {currentOrder}
+                      {currentEventPlay?.value}
                     </Text>
                   </Flex>
                   <Flex mt={4} px={5} justifyContent="space-between" alignItems={'flex-start'} borderBottomWidth={1}>
                     <Flex alignItems={'center'}>
-                      <Link
-                        href="#"
-                        style={{ textDecoration: 'none' }}
-                        onClick={() => {
-                          setCurrentOrderStatus(EventOrderStringType.buy);
-                        }}
-                      >
-                        <Text
-                          height={38}
-                          fontWeight={
-                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? 'bold' : ''
-                          }
-                          borderBottomWidth={
-                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? 1 : 0
-                          }
-                          borderColor={
-                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? '#1652f0' : ''
-                          }
-                          color={EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy ? '#1652f0' : ''}
-                        >
-                          Buy
-                        </Text>
-                      </Link>
-                      <Link
-                        href="#"
-                        style={{ textDecoration: 'none' }}
-                        ml={6}
-                        onClick={() => {
-                          setCurrentOrderStatus(EventOrderStringType.sell);
-                        }}
-                      >
-                        <Text
-                          height={38}
-                          fontWeight={
-                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? 'bold' : ''
-                          }
-                          borderBottomWidth={
-                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? 1 : 0
-                          }
-                          borderColor={
-                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? '#1652f0' : ''
-                          }
-                          color={
-                            EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell ? '#1652f0' : ''
-                          }
-                        >
-                          Sell
-                        </Text>
-                      </Link>
+                      {currentOrderStatus === EventOrderStringType.buy ? (
+                        <>
+                          <Link
+                            href="#"
+                            style={{ textDecoration: 'none' }}
+                            onClick={() => {
+                              setCurrentOrderStatus(EventOrderStringType.buy);
+                            }}
+                          >
+                            <Text
+                              height={38}
+                              fontWeight={currentOrderStatus === EventOrderStringType.buy ? 'bold' : ''}
+                              borderBottomWidth={currentOrderStatus === EventOrderStringType.buy ? 1 : 0}
+                              borderColor={currentOrderStatus === EventOrderStringType.buy ? '#1652f0' : ''}
+                              color={currentOrderStatus === EventOrderStringType.buy ? '#1652f0' : ''}
+                            >
+                              Buy
+                            </Text>
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          <Link
+                            href="#"
+                            style={{ textDecoration: 'none' }}
+                            onClick={() => {
+                              setCurrentOrderStatus(EventOrderStringType.sell);
+                            }}
+                          >
+                            <Text
+                              height={38}
+                              fontWeight={currentOrderStatus === EventOrderStringType.sell ? 'bold' : ''}
+                              borderBottomWidth={currentOrderStatus === EventOrderStringType.sell ? 1 : 0}
+                              borderColor={currentOrderStatus === EventOrderStringType.sell ? '#1652f0' : ''}
+                              color={currentOrderStatus === EventOrderStringType.sell ? '#1652f0' : ''}
+                            >
+                              Sell
+                            </Text>
+                          </Link>
+                        </>
+                      )}
                     </Flex>
                     <Select variant="unstyled" width={24}>
                       <option value="option1">Market</option>
@@ -782,27 +818,52 @@ const Event = () => {
 
                   <Box mt={4} px={5}>
                     <Flex justifyContent={'space-between'} alignItems={'center'}>
-                      <Text>Amount</Text>
+                      <Text>{currentOrderStatus === EventOrderStringType.buy ? 'Amount' : 'Handles'}</Text>
                       <Flex alignItems={'center'}>
-                        <Text backgroundColor={'#f2f2f2'} borderRadius={10} px={2} mr={2} fontSize={14}>
-                          Balance {usdtBalance}
-                        </Text>
-                        <Button
-                          colorScheme="gray"
-                          size={'xs'}
-                          onClick={() => {
-                            setCurrentAmount(eventPlay?.maximumCapitalPool as number);
-                          }}
-                        >
-                          Max
-                        </Button>
+                        {currentOrderStatus === EventOrderStringType.buy ? (
+                          <>
+                            <Text backgroundColor={'#f2f2f2'} borderRadius={10} px={2} mr={2} fontSize={14}>
+                              Balance {usdtBalance}
+                            </Text>
+                          </>
+                        ) : (
+                          <>
+                            <Text backgroundColor={'#f2f2f2'} borderRadius={10} px={2} mr={2} fontSize={14}>
+                              You already hold {currentEventPlay?.orders[0].amount}
+                            </Text>
+                          </>
+                        )}
+
+                        {currentOrderStatus === EventOrderStringType.buy && (
+                          <>
+                            <Button
+                              colorScheme="gray"
+                              size={'xs'}
+                              onClick={() => {
+                                setCurrentAmount((eventPlay?.maximumCapitalPool as number).toString());
+                              }}
+                            >
+                              Max
+                            </Button>
+                          </>
+                        )}
                       </Flex>
                     </Flex>
 
                     <HStack mt={4}>
-                      <Button onClick={onChangeDec}>-</Button>
+                      <Button
+                        onClick={onChangeDec}
+                        isDisabled={currentOrderStatus === EventOrderStringType.sell && true}
+                      >
+                        -
+                      </Button>
                       <Input value={currentAmount} onChange={onChangeCurrentAmount} textAlign={'center'} />
-                      <Button onClick={onChangeInc}>+</Button>
+                      <Button
+                        onClick={onChangeInc}
+                        isDisabled={currentOrderStatus === EventOrderStringType.sell && true}
+                      >
+                        +
+                      </Button>
                     </HStack>
 
                     {Number(usdtBalance) < (eventPlay?.guessNumber as number) && (
@@ -817,9 +878,17 @@ const Event = () => {
                       </Button>
                     )}
                     {EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell && (
-                      <Button colorScheme="red" mt={5} width={'100%'} onClick={onClickSell}>
+                      <Button colorScheme="red" mt={5} width={'100%'} onClick={onClickSell} isLoading={sellLoading}>
                         Sell
                       </Button>
+                    )}
+
+                    {currentOrderStatus === EventOrderStringType.sell && (
+                      <>
+                        <Text color={'red'} fontSize={12} textAlign={'center'} mt={5}>
+                          (Your fund will return it to you during the settlement)
+                        </Text>
+                      </>
                     )}
 
                     <Box mt={6}>
