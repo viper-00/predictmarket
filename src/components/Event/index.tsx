@@ -90,6 +90,7 @@ const Event = () => {
   const [usdtBalance, setUsdtBalance] = useState<string>('0');
   const [payLoading, setPayLoading] = useState<boolean>(false);
   const [sellLoading, setSellLoading] = useState<boolean>(false);
+  const [settlementLoading, setSettlementLoading] = useState<boolean>(false);
   const [userAddress, setUserAddress] = useState<string>('');
 
   const onChangeDec = () => {
@@ -213,11 +214,12 @@ const Event = () => {
   const handleClickPostComment = async () => {};
 
   const onChangeCurrentAmount = (event: any) => {
-    if (
-      (eventPlay?.minimumCapitalPool as number) <= event.target.value &&
-      (eventPlay?.maximumCapitalPool as number) >= event.target.value
-    )
-      setCurrentAmount(event.target.value);
+    // if (
+    //   (eventPlay?.minimumCapitalPool as number) <= event.target.value &&
+    //   (eventPlay?.maximumCapitalPool as number) >= event.target.value
+    // ) {
+    // }
+    setCurrentAmount(event.target.value);
   };
 
   const onClickBuy = async () => {
@@ -266,6 +268,28 @@ const Event = () => {
       console.error(e);
     } finally {
       setSellLoading(false);
+    }
+  };
+
+  const handleClickSettlement = async () => {
+    try {
+      setSettlementLoading(true);
+      const response: any = await axios.post(Http.marketEventOrderSettle, {
+        event_unique_code: event?.uniqueCode,
+        password: '',
+      });
+      if (response.code === 10200 && response.result) {
+        toast({
+          title: `Successfully settlement`,
+          status: 'success',
+          isClosable: true,
+        });
+        window.location.reload();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSettlementLoading(false);
     }
   };
 
@@ -367,13 +391,28 @@ const Event = () => {
 
               <Text mt={2}>{eventPlay?.introduce}</Text>
 
-              <Flex borderRadius={10} borderWidth={1} alignItems="center" px={5} mt={5} py={2}>
-                <Circle size={10} borderWidth={1} backgroundColor="#f2f2f2">
-                  <FaHammer size={20} />
-                </Circle>
-                <Box ml={4}>
-                  <Text fontSize={14}>Resolver</Text>
-                  <Text>{event?.rosolverAddress}</Text>
+              <Flex
+                borderRadius={10}
+                borderWidth={1}
+                alignItems="center"
+                px={5}
+                mt={5}
+                py={2}
+                justifyContent="space-between"
+              >
+                <Flex>
+                  <Circle size={10} borderWidth={1} backgroundColor="#f2f2f2">
+                    <FaHammer size={20} />
+                  </Circle>
+                  <Box ml={4}>
+                    <Text fontSize={14}>Resolver</Text>
+                    <Text>{event?.rosolverAddress}</Text>
+                  </Box>
+                </Flex>
+                <Box>
+                  <Button colorScheme="green" size="md" onClick={handleClickSettlement} isLoading={settlementLoading}>
+                    Settlement
+                  </Button>
                 </Box>
               </Flex>
             </Box>

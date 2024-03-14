@@ -25,6 +25,7 @@ export class Http {
 
   // order
   static marketEventOrder = this.httpPath + 'client/event/order/market-event-order';
+  static marketEventOrderSettle = this.httpPath + 'client/event/order/market-event-order-settle';
 
   // comment
   static marketEventComment = this.httpPath + 'client/event/comment/market-event-comment';
