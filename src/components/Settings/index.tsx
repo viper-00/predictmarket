@@ -5,6 +5,9 @@ import {
   Card,
   Container,
   Flex,
+  FormControl,
+  FormLabel,
+  Grid,
   Input,
   Switch,
   Tab,
@@ -15,43 +18,128 @@ import {
   Text,
   Textarea,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
 import { MdPhotoCamera } from 'react-icons/md';
-
-import {
-  getUserAuthorization,
-  getUserContractAddress,
-  getUsername,
-  resetUser,
-  setUserAuthorization,
-  getUserAvatarUrl,
-  getUserEmail,
-  getUserBio,
-} from 'lib/store/user';
 import { useEffect, useState } from 'react';
+import axios from 'packages/core/http/axios';
+import { Http } from 'packages/core/http/http';
+import { UserNotificationSetting, UserProfile } from 'packages/types';
 
 const Settings = () => {
-  const [username, setUsername] = useState<string>('');
-  const [contractAddress, setContractAddress] = useState<string>('');
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [bio, setBio] = useState<string>('');
+  const toast = useToast();
+  const [profile, setProfile] = useState<UserProfile>();
+  const [noSetting, setNoSetting] = useState<UserNotificationSetting>();
+
+  async function init() {
+    try {
+      const response: any = await axios.get(Http.userSetting);
+      if (response.code === 10200 && response.result) {
+        const setting = response.data.setting;
+        if (setting) {
+          const p: UserProfile = {
+            avatarUrl: setting.avatar_url,
+            bio: setting.bio,
+            contractAddress: setting.contract_Address,
+            createdTime: setting.created_time,
+            email: setting.email,
+            invitationCode: setting.invitation_code,
+            username: setting.username,
+          };
+          setProfile(p);
+
+          const n: UserNotificationSetting = {
+            emailUpdate: setting.email_update,
+            dailyUpdate: setting.daily_update,
+            incomingUpdate: setting.incoming_update,
+            outgoingUpdate: setting.outgoing_update,
+            eventUpdate: setting.event_update,
+            orderUpdate: setting.order_update,
+            cryptoPriceUpdate: setting.crypto_price_update,
+          };
+          setNoSetting(n);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   useEffect(() => {
-    setUsername(getUsername());
-    setContractAddress(getUserContractAddress());
-    setAvatarUrl(getUserAvatarUrl());
-    setEmail(getUserEmail());
-    setBio(getUserBio());
+    init();
   }, []);
+
+  const onChangeNotificationUpdate = async (str: string, status: number) => {
+    try {
+      const response: any = await axios.put(Http.userNotificationSetting, {
+        type: str,
+        status: status,
+      });
+      if (response.code === 10200 && response.result) {
+        init();
+
+        toast({
+          title: `Update completed`,
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onChangeAvatar = async (event: any) => {
+    const fileInput = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', fileInput);
+
+    try {
+      const response: any = await axios.post(Http.fileUpload, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.code === 10200 && response.result) {
+        setProfile((prevProfile: any) => ({
+          ...prevProfile,
+          avatarUrl: response.data.file_url,
+        }));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onSaveChanges = async () => {
+    try {
+      const response: any = await axios.put(Http.userSetting, {
+        username: profile?.username,
+        bio: profile?.bio,
+        avatar_url: profile?.avatarUrl,
+      });
+      if (response.code === 10200 && response.result) {
+        init();
+
+        toast({
+          title: `Update completed`,
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
       <MetaTags title="Settings" />
       <HomeNav />
-      <Container maxWidth={["100%", "100%", "100%", "80%", "70%", "50%"]}>
+      <Container maxWidth={['100%', '100%', '100%', '80%', '70%', '50%']}>
         <Box mt={10}>
           <Tabs variant="unstyled" orientation="vertical">
             <TabList>
@@ -68,9 +156,9 @@ const Settings = () => {
                   Profile Settings
                 </Text>
                 <Flex alignItems={'center'} mt={5}>
-                  {avatarUrl !== '' ? (
+                  {profile?.avatarUrl !== '' ? (
                     <>
-                      <Avatar size={'lg'} src={avatarUrl} />
+                      <Avatar size={'lg'} src={profile?.avatarUrl} />
                     </>
                   ) : (
                     <>
@@ -78,21 +166,28 @@ const Settings = () => {
                     </>
                   )}
 
-                  <Button leftIcon={<MdPhotoCamera />} colorScheme="gray" size={'sm'} ml={5} borderRadius={'50'}>
-                    Upload
-                  </Button>
+                  <Box ml={5}>
+                    <Input size="md" type="file" onChange={onChangeAvatar} />
+                  </Box>
+
+                  {/* <Button leftIcon={<MdPhotoCamera />} colorScheme="gray" size={'sm'} ml={5} borderRadius={'50'}>
+                    <Text>Upload</Text>
+                  </Button> */}
                 </Flex>
                 <Box mt={5}>
                   <Text fontWeight={'bold'}>Email</Text>
-                  <Text>{email}</Text>
+                  <Text>{profile?.email}</Text>
                 </Box>
                 <Box mt={5}>
                   <Text fontWeight={'bold'}>Username</Text>
                   <Input
                     placeholder="Name"
-                    value={username}
+                    value={profile?.username || ''}
                     onChange={(event: any) => {
-                      setUsername(event.target.value);
+                      setProfile((prevProfile: any) => ({
+                        ...prevProfile,
+                        username: event.target.value as string,
+                      }));
                     }}
                   />
                 </Box>
@@ -100,13 +195,16 @@ const Settings = () => {
                   <Text fontWeight={'bold'}>Bio</Text>
                   <Textarea
                     placeholder="Bio"
-                    value={bio}
+                    value={profile?.bio || ''}
                     onChange={(event: any) => {
-                      setBio(event.target.value);
+                      setProfile((prevProfile: any) => ({
+                        ...prevProfile,
+                        bio: event.target.value as string,
+                      }));
                     }}
                   />
                 </Box>
-                <Button colorScheme="messenger" size="lg" mt={5}>
+                <Button colorScheme="messenger" size="lg" mt={5} onClick={onSaveChanges}>
                   Save changes
                 </Button>
               </TabPanel>
@@ -116,13 +214,85 @@ const Settings = () => {
                 </Text>
                 <Card mt={5} p={5}>
                   <Text fontWeight={'bold'}>Email</Text>
-                  <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
-                    <Flex>
-                      <Text>Market updates</Text>
-                      <Text ml={5}>市场动态</Text>
+                  <Grid rowGap={4}>
+                    <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
+                      <Text>Email updates</Text>
+                      <Switch
+                        size="md"
+                        isChecked={noSetting?.emailUpdate === 1 ? true : false}
+                        onChange={() => {
+                          const status = noSetting?.emailUpdate === 1 ? 2 : 1;
+                          onChangeNotificationUpdate('email', status);
+                        }}
+                      />
                     </Flex>
-                    <Switch size="md" />
-                  </Flex>
+                    <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
+                      <Text>Daily updates</Text>
+                      <Switch
+                        size="md"
+                        isChecked={noSetting?.dailyUpdate === 1 ? true : false}
+                        onChange={() => {
+                          const status = noSetting?.dailyUpdate === 1 ? 2 : 1;
+                          onChangeNotificationUpdate('daily', status);
+                        }}
+                      />
+                    </Flex>
+                    <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
+                      <Text>Incoming updates</Text>
+                      <Switch
+                        size="md"
+                        isChecked={noSetting?.incomingUpdate === 1 ? true : false}
+                        onChange={() => {
+                          const status = noSetting?.incomingUpdate === 1 ? 2 : 1;
+                          onChangeNotificationUpdate('incoming', status);
+                        }}
+                      />
+                    </Flex>
+                    <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
+                      <Text>Outgoing updates</Text>
+                      <Switch
+                        size="md"
+                        isChecked={noSetting?.outgoingUpdate === 1 ? true : false}
+                        onChange={() => {
+                          const status = noSetting?.outgoingUpdate === 1 ? 2 : 1;
+                          onChangeNotificationUpdate('outgoing', status);
+                        }}
+                      />
+                    </Flex>
+                    <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
+                      <Text>Event updates</Text>
+                      <Switch
+                        size="md"
+                        isChecked={noSetting?.eventUpdate === 1 ? true : false}
+                        onChange={() => {
+                          const status = noSetting?.eventUpdate === 1 ? 2 : 1;
+                          onChangeNotificationUpdate('event', status);
+                        }}
+                      />
+                    </Flex>
+                    <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
+                      <Text>Order updates</Text>
+                      <Switch
+                        size="md"
+                        isChecked={noSetting?.orderUpdate === 1 ? true : false}
+                        onChange={() => {
+                          const status = noSetting?.orderUpdate === 1 ? 2 : 1;
+                          onChangeNotificationUpdate('order', status);
+                        }}
+                      />
+                    </Flex>
+                    <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
+                      <Text>Crypto Price updates</Text>
+                      <Switch
+                        size="md"
+                        isChecked={noSetting?.cryptoPriceUpdate === 1 ? true : false}
+                        onChange={() => {
+                          const status = noSetting?.cryptoPriceUpdate === 1 ? 2 : 1;
+                          onChangeNotificationUpdate('crypto', status);
+                        }}
+                      />
+                    </Flex>
+                  </Grid>
                 </Card>
               </TabPanel>
             </TabPanels>

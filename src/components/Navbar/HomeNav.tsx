@@ -75,13 +75,13 @@ const HomeNav = () => {
   const [contractAddress, setContractAddress] = useState<string>('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [notification, setNotification] = useState<UserNotification[]>([]);
-  const [usdtBalance, setUsdtBalance] = useState<string>('0')
+  const [usdtBalance, setUsdtBalance] = useState<string>('0');
 
   useEffect(() => {
     setUsername(getUsername());
     setContractAddress(getUserContractAddress());
     setAvatarUrl(getUserAvatarUrl());
-    setUsdtBalance(getUsdtBalance())
+    setUsdtBalance(getUsdtBalance());
   }, []);
 
   useEffect(() => {
@@ -143,7 +143,7 @@ const HomeNav = () => {
             <Link href="/">
               {colorMode === 'light' ? (
                 <>
-                  <Image src={LogoBlack} alt="logo"/>
+                  <Image src={LogoBlack} alt="logo" />
                 </>
               ) : (
                 <>
@@ -405,7 +405,7 @@ const HomeNav = () => {
                   <Box mx={2}>
                     {isLogin && (
                       <>
-                        <MenuItem as="a" href="/profile" py={3}>
+                        <MenuItem as="a" href={'/profile/' + getUserContractAddress()} py={3}>
                           Profile
                         </MenuItem>
                         <MenuItem as="a" href="/settings" py={3}>

@@ -60,6 +60,7 @@ import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { EventPlayType } from 'packages/types';
 import { DEFAULT_CHAIN_ID } from 'packages/constants';
+import { getUserContractAddress } from 'lib/store/user';
 
 const Form1 = () => {
   const [title, setTitle] = useState<string>(getEventTitle());
@@ -121,6 +122,7 @@ const Form1 = () => {
               maximumCapitalPool: item.maximum_capital_pool,
               coin: item.coin,
               pledgeAmount: item.pledge_amount,
+              values: [],
             });
           });
           setPlayTypeList(plays);
@@ -204,7 +206,7 @@ const Form2 = () => {
   const handleClickConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
   const [logo, setLogo] = useState<string>(getEventLogo());
-  const [settlementAddress, setSettlementAddress] = useState<string>(getEventSettlementAddress());
+  const [resolverAddress, setResolverAddress] = useState<string>(getUserContractAddress());
   // const [singleAmount, setSingleAmount] = useState<number>(getEventSingleAmount());
   // const [capitalPoolAmount, setCapitalPoolAmount] = useState<number>(getEventCapitalPoolAmount());
   const [password, setPassword] = useState<string>(getEventPassword());
@@ -241,10 +243,10 @@ const Form2 = () => {
   //   setEventCapitalPoolAmount(value);
   // };
 
-  const onChangeSettlementAddress = (event: any) => {
-    setSettlementAddress(event.target.value);
-    setEventSettlementAddress(event.target.value);
-  };
+  // const onChangeSettlementAddress = (event: any) => {
+  //   setSettlementAddress(event.target.value);
+  //   setEventSettlementAddress(event.target.value);
+  // };
 
   const onChangePassword = (event: any) => {
     setPassword(event.target.value);
@@ -274,43 +276,16 @@ const Form2 = () => {
           </GridItem>
         </SimpleGrid>
       </FormControl>
-
-      {/* <FormControl mt="2">
-        <FormLabel htmlFor="singleAmount" fontWeight={'normal'}>
-          Single amount
-        </FormLabel>
-        <NumberInput defaultValue={15} min={1} value={singleAmount} onChange={onChangeSingleAmount}>
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-      </FormControl> */}
-
-      {/* <FormControl mt="2">
-        <FormLabel htmlFor="capitalPoolAmount" fontWeight={'normal'}>
-          Capital Pool Amount
-        </FormLabel>
-        <NumberInput defaultValue={15} min={10} value={capitalPoolAmount} onChange={onChangeCapitalPoolAmount}>
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-      </FormControl> */}
-
       <FormControl mt="2">
-        <FormLabel htmlFor="settlementAddress" fontWeight={'normal'}>
-          Settlement Address
+        <FormLabel htmlFor="resolverAddress" fontWeight={'normal'}>
+          Resolver Address
         </FormLabel>
         <Input
-          id="settlementAddress"
+          id="resolverAddress"
           type="text"
-          value={settlementAddress}
-          onChange={onChangeSettlementAddress}
-          placeholder={'Enter settlement address'}
+          value={resolverAddress}
+          // onChange={onChangeSettlementAddress}
+          disabled={true}
         />
       </FormControl>
 
@@ -364,25 +339,27 @@ const Form3 = () => {
         Confirm Event
       </Heading>
       <Flex mt={5} alignItems={'flex-start'}>
-        <SimpleGrid rowGap={10}>
-          <Text height={50}>Logo</Text>
-          <Text>Title</Text>
-          <Text>Type</Text>
-          <Text>Play Type</Text>
-          <Text>Expire Time</Text>
-          <Text>Settlement Address</Text>
-          <Text>Password</Text>
-        </SimpleGrid>
+        <Box>
+          <Text height={100}>Logo</Text>
+          <Text height={70}>Title</Text>
+          <Text height={70}>Type</Text>
+          <Text height={70}>Play Type</Text>
+          <Text height={70}>Expire Time</Text>
+          <Text height={70}>Resolver Address</Text>
+          <Text height={70}>Password</Text>
+        </Box>
 
-        <SimpleGrid rowGap={10} ml={10}>
-          <Avatar size="md" name="Prosper Otemuyiwa" src={getEventLogo()} height={50} />
-          <Text>{getEventTitle()}</Text>
-          <Text>{getEventType()}</Text>
-          <Text>{getEventPlayType()}</Text>
-          <Text>{getEventExpireTime().toLocaleString()}</Text>
-          <Text>{getEventSettlementAddress()}</Text>
-          <Text>{getEventPassword()}</Text>
-        </SimpleGrid>
+        <Box ml={10}>
+          <Box height={100}>
+            <Avatar size="md" name="Prosper Otemuyiwa" src={getEventLogo()} />
+          </Box>
+          <Text height={70}>{getEventTitle()}</Text>
+          <Text height={70}>{getEventType()}</Text>
+          <Text height={70}>{getEventPlayType()}</Text>
+          <Text height={70}>{getEventExpireTime().toLocaleString()}</Text>
+          <Text height={70}>{getUserContractAddress()}</Text>
+          <Text height={70}>{getEventPassword()}</Text>
+        </Box>
       </Flex>
     </>
   );
@@ -401,14 +378,16 @@ const Post = () => {
         type: getEventType(),
         play_type: getEventPlayType(),
         event_logo: getEventLogo(),
-        settlement_address: getEventSettlementAddress(),
-        // capital_pool: getEventCapitalPoolAmount(),
-        resolver_address: getEventSettlementAddress(),
-        // rule_details: getEventRuleDetails(),
+        resolver_address: getUserContractAddress(),
         password: getEventPassword(),
       });
 
       if (response.code === 10200 && response.result) {
+        toast({
+          title: `Successfully create`,
+          status: 'success',
+          isClosable: true,
+        });
         resetEvent();
         window.location.href = '/event/' + response.data.unique_code;
       }

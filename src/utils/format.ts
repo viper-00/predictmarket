@@ -6,14 +6,14 @@ import { countDigits } from './number';
  * @param {number} n number of chars to keep at front/end
  * @returns {string}
  */
-export const formatEllipsisTxt = (str?: string, n = 6): string => {
+export const formatEllipsisTxt = (str?: string, n: number = 6): string => {
   if (str) {
     return `${str.slice(0, n)}...${str.slice(str.length - n)}`;
   }
   return '';
 };
 
-export const formatTimestamp = (timestamp: number): string => {
+export const formatTimestamp = (timestamp: number) => {
   const defaultNum = countDigits(timestamp);
   if (defaultNum !== 10 && defaultNum !== 13) {
     return '';
@@ -27,9 +27,9 @@ export const formatTimestamp = (timestamp: number): string => {
 
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  const day = date.getDay();
+  const day = date.getDate();
   const month = monthNames[date.getMonth()];
   const year = date.getFullYear();
 
-  return `${month} ${day}, ${year}`;
+  return `${month} ${day}, ${year}`.toString();
 };

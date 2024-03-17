@@ -9,9 +9,9 @@ export class Http {
   static userRegister = this.httpPath + 'client/register';
   static userVerifyInvitation = this.httpPath + 'client/verify-invitation';
   static userLogin = this.httpPath + 'client/login';
+  static userProfile = this.httpPath + 'client/user-profile';
 
   // user
-  static userInfo = this.httpPath + 'client/user/user-info';
   static userSetting = this.httpPath + 'client/user/user-setting';
   static userNotificationSetting = this.httpPath + 'client/user/user-notification-setting';
   static userAffiliate = this.httpPath + 'client/user/user-affiliate';

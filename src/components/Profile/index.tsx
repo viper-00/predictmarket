@@ -8,6 +8,7 @@ import {
   Grid,
   Heading,
   IconButton,
+  Link,
   Tab,
   TabIndicator,
   TabList,
@@ -24,35 +25,114 @@ import { getJoinedDate, getUserAvatarUrl, getUserContractAddress, getUsername } 
 import { useEffect, useState } from 'react';
 import { IoStatsChart } from 'react-icons/io5';
 import { formatEllipsisTxt, formatTimestamp } from 'utils/format';
+import { useRouter } from 'next/router';
+import axios from 'packages/core/http/axios';
+import { Http } from 'packages/core/http/http';
+import { UserProfile, EventType, EventOrder, EventComment, EventOrderType, EventOrderStringType } from 'packages/types';
 
 const Profile = () => {
-  const [username, setUsername] = useState<string>('');
-  const [contractAddress, setContractAddress] = useState<string>('');
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const [joinedDate, setJoinedDate] = useState<number>(0);
+  const {
+    query: { id },
+    isReady,
+  } = useRouter();
 
-  const contractBgColor = useColorModeValue("#f2f2f2", "#2c3f4f")
+  const [userProfile, setUserProfile] = useState<UserProfile>();
+  const [events, setEvents] = useState<EventType[]>([]);
+  const [orders, setOrders] = useState<EventOrder[]>([]);
+  const [comments, setComments] = useState<EventComment[]>([]);
+
+  const contractBgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
 
   const toast = useToast();
 
   useEffect(() => {
-    setContractAddress(getUserContractAddress());
-    setUsername(getUsername());
-    setJoinedDate(getJoinedDate());
-    setAvatarUrl(getUserAvatarUrl());
-  }, []);
+    async function init() {
+      try {
+        const response: any = await axios.get(Http.userProfile, {
+          params: {
+            address: id,
+          },
+        });
+        if (response.code === 10200 && response.result) {
+          const profileResult = response.data.profile;
+          const eventResult = response.data.event;
+          const orderResult = response.data.order;
+          const commentResult = response.data.comment;
+
+          if (profileResult) {
+            let profile: UserProfile = {
+              avatarUrl: response.data.profile.avatar_url,
+              bio: response.data.profile.bio,
+              contractAddress: response.data.profile.contract_address,
+              createdTime: response.data.profile.created_time,
+              email: response.data.profile.email,
+              invitationCode: response.data.profile.invitation_code,
+              username: response.data.profile.username,
+            };
+            setUserProfile(profile);
+          }
+
+          if (eventResult && eventResult.length > 0) {
+            let events: EventType[] = [];
+
+            for (const element of eventResult) {
+              let e: EventType = {
+                createdTime: element.created_time,
+                eventLogo: element.event_logo,
+                eventStatus: element.event_status,
+                expireTime: element.expire_time,
+                rosolverAddress: element.rosolver_address,
+                title: element.title,
+                uniqueCode: element.unique_website_code,
+                playId: element.play_id,
+                type: element.type,
+                settlementTime: element.settlement_time,
+                settlementHash: element.settlement_hash,
+              };
+              events.push(e);
+            }
+            setEvents(events);
+          }
+
+          if (orderResult && orderResult.length > 0) {
+            var orders: EventOrder[] = [];
+
+            for (const element of orderResult) {
+              let order: EventOrder = {
+                amount: element.amount,
+                orderType: element.order_type,
+                userAddress: element.user_address,
+                username: element.username,
+                createdTime: element.created_time,
+                hash: element.hash,
+              };
+
+              orders.push(order);
+            }
+            setOrders(orders);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    if (id && id !== '') {
+      init();
+    }
+  }, [id]);
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
       <MetaTags title="Profile" />
       <HomeNav />
-      <Container maxWidth={["100%", "100%", "100%", "80%", "70%", "60%"]}>
+      <Container maxWidth={['100%', '100%', '100%', '80%', '70%', '60%']}>
         <Box mt={16}>
           <Flex justifyContent={'space-between'}>
             <Flex>
-              {avatarUrl !== '' ? (
+              {userProfile?.avatarUrl !== '' ? (
                 <>
-                  <Avatar size={'2xl'} src={avatarUrl} />
+                  <Avatar size={'2xl'} src={userProfile?.avatarUrl} />
                 </>
               ) : (
                 <>
@@ -60,7 +140,7 @@ const Profile = () => {
                 </>
               )}
               <Box ml={8}>
-                <Heading>{username}</Heading>
+                <Heading>{userProfile?.username}</Heading>
                 <Flex mt={5}>
                   <Text
                     background={contractBgColor}
@@ -68,7 +148,7 @@ const Profile = () => {
                     borderRadius={10}
                     height={6}
                     onClick={async () => {
-                      await navigator.clipboard.writeText(contractAddress);
+                      await navigator.clipboard.writeText(userProfile?.contractAddress as string);
 
                       toast({
                         title: `Copied successfully`,
@@ -77,10 +157,9 @@ const Profile = () => {
                       });
                     }}
                   >
-                    {formatEllipsisTxt(contractAddress)}
+                    {formatEllipsisTxt(userProfile?.contractAddress)}
                   </Text>
-                  {/* <Text pl={5}>Joined {Date(getJoinedDate().).toLocaleString()}</Text> */}
-                  <Text pl={5}>Joined {formatTimestamp(joinedDate)}</Text>
+                  <Text pl={5}>Joined {formatTimestamp(userProfile?.createdTime as number)}</Text>
                 </Flex>
               </Box>
             </Flex>
@@ -100,53 +179,144 @@ const Profile = () => {
             <Circle size={10} bg="tomato" color="white">
               <IoStatsChart size={20} />
             </Circle>
-            <Text mt={2}>Positions value</Text>
-            <Text fontWeight={'bold'} fontSize={20}>
-              $0.00
-            </Text>
-          </Box>
-          <Box borderWidth={1} padding={3} borderRadius={10}>
-            <Circle size={10} bg="tomato" color="white">
-              <IoStatsChart size={20} />
-            </Circle>
             <Text mt={2}>Profit/loss</Text>
             <Text fontWeight={'bold'} fontSize={20}>
-              $0.00
+              (0) USDT
             </Text>
           </Box>
           <Box borderWidth={1} padding={3} borderRadius={10}>
             <Circle size={10} bg="tomato" color="white">
               <IoStatsChart size={20} />
             </Circle>
-            <Text mt={2}>Volume traded</Text>
+            <Text mt={2}>Events traded</Text>
             <Text fontWeight={'bold'} fontSize={20}>
-              $0.00
+              {events.length}
             </Text>
           </Box>
           <Box borderWidth={1} padding={3} borderRadius={10}>
             <Circle size={10} bg="tomato" color="white">
               <IoStatsChart size={20} />
             </Circle>
-            <Text mt={2}>Markets traded</Text>
+            <Text mt={2}>Orders traded</Text>
             <Text fontWeight={'bold'} fontSize={20}>
-              0
+              {orders.length}
+            </Text>
+          </Box>
+          <Box borderWidth={1} padding={3} borderRadius={10}>
+            <Circle size={10} bg="tomato" color="white">
+              <IoStatsChart size={20} />
+            </Circle>
+            <Text mt={2}>Comments traded</Text>
+            <Text fontWeight={'bold'} fontSize={20}>
+              {comments.length}
             </Text>
           </Box>
         </Grid>
 
-        <Box mt={5}>
+        <Box mt={5} pb={10}>
           <Tabs position="relative" variant="unstyled">
             <TabList borderBottomWidth={1}>
-              <Tab>Positions</Tab>
-              <Tab>Activity</Tab>
+              {/* <Tab>Activity</Tab> */}
+              <Tab>Events</Tab>
+              <Tab>Orders</Tab>
+              <Tab>Comments</Tab>
             </TabList>
             <TabIndicator mt="-1.5px" height="2px" bg="blue.500" borderRadius="1px" />
             <TabPanels>
-              <TabPanel>
-                <Text>No positions found</Text>
+              <TabPanel p={0}>
+                {events && events.length > 0 ? (
+                  events.map((item, index) => (
+                    <Link
+                      href={window.location.origin + '/event/' + item.uniqueCode}
+                      style={{ textDecoration: 'none' }}
+                      key={index}
+                    >
+                      <Flex
+                        alignItems={'center'}
+                        px={1}
+                        py={3}
+                        _hover={{
+                          backgroundColor: '#f2f2f2',
+                        }}
+                        borderBottomWidth={1}
+                      >
+                        <Avatar name="Dan Abrahmov" src={item.eventLogo} />
+                        <Box ml={4}>
+                          <Flex alignItems={'center'}>
+                            <Text
+                              mt={1}
+                              fontSize={14}
+                              color={'#808080'}
+                              background={contractBgColor}
+                              px={4}
+                              borderRadius={10}
+                            >
+                              {item.type}
+                            </Text>
+                            <Text fontSize={14} ml={2}>
+                              {formatTimestamp(new Date(item?.expireTime as number).getTime())}
+                            </Text>
+                          </Flex>
+
+                          <Flex mt={2} alignItems={'center'}>
+                            <Text fontSize={14} fontWeight={'bold'}>
+                              {item.title}
+                            </Text>
+                          </Flex>
+                        </Box>
+                      </Flex>
+                    </Link>
+                  ))
+                ) : (
+                  <Text>No events found</Text>
+                )}
+              </TabPanel>
+              <TabPanel p={0}>
+                {orders && orders.length > 0 ? (
+                  orders.map((item, index) => (
+                    <Link href={'#'} style={{ textDecoration: 'none' }} key={index}>
+                      <Box
+                        alignItems={'center'}
+                        px={1}
+                        py={3}
+                        _hover={{
+                          backgroundColor: '#f2f2f2',
+                        }}
+                        borderBottomWidth={1}
+                      >
+                        <Flex alignItems={'center'}>
+                          <Text
+                            mt={1}
+                            fontSize={14}
+                            color={'#808080'}
+                            background={contractBgColor}
+                            px={4}
+                            borderRadius={10}
+                            fontWeight={'bold'}
+                          >
+                            {item.orderType.toUpperCase()}
+                          </Text>
+                          <Text fontSize={14} ml={2}>
+                            {formatTimestamp(item?.createdTime)}
+                          </Text>
+                        </Flex>
+                        <Text fontSize={16} mt={2}>
+                          Amount: {item.amount} USDT
+                        </Text>
+                        {item?.orderType === EventOrderStringType.buy && (
+                          <Text fontSize={16} mt={1}>
+                            Hash: {formatEllipsisTxt(item?.hash)}
+                          </Text>
+                        )}
+                      </Box>
+                    </Link>
+                  ))
+                ) : (
+                  <Text>No orders found</Text>
+                )}
               </TabPanel>
               <TabPanel>
-                <Text>No positions found</Text>
+                <Text>No comments found</Text>
               </TabPanel>
             </TabPanels>
           </Tabs>

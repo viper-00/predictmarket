@@ -143,10 +143,11 @@ export type EventType = {
   expireTime: number;
   playId: number;
   rosolverAddress: string;
-  settlementAddress: string;
   title: string;
   uniqueCode: string;
   type: string;
+  settlementTime: number;
+  settlementHash: string;
 };
 
 export enum EventOrderType {
@@ -164,4 +165,32 @@ export type EventOrder = {
   orderType: string;
   userAddress: string;
   username: string;
+  createdTime: number;
+  hash: string;
+};
+
+export type EventComment = {
+  content: string;
+  eventUniqueCode: string;
+  replyId: number;
+};
+
+export type UserProfile = {
+  avatarUrl: string;
+  bio: string;
+  contractAddress: string;
+  createdTime: number;
+  email: string;
+  invitationCode: string;
+  username: string;
+};
+
+export type UserNotificationSetting = {
+  emailUpdate: number;
+  dailyUpdate: number;
+  incomingUpdate: number;
+  outgoingUpdate: number;
+  eventUpdate: number;
+  orderUpdate: number;
+  cryptoPriceUpdate: number;
 };
