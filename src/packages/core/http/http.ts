@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 export class Http {
-  static httpPath = 'http://127.0.0.1:8888/api/';
+  // static httpPath = 'http://127.0.0.1:8888/api/';
+  static httpPath = 'https://api.predictmarket.xyz/api/';
 
   // test
   static test = this.httpPath + 'client/test';

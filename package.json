@@ -6,11 +6,11 @@
   "scripts": {
     "format": "prettier . \"**/*.+(js|ts|json)\" --write --ignore-path .gitignore",
     "format:check": "prettier \"**/*.+(js|ts|json)\" --check --ignore-path .gitignore",
-    "dev": "next dev",
+    "dev": "next dev -p 9999",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 9999",
     "lint": "next lint",
-    "test:e2e": "start-server-and-test dev http://localhost:3000 test:cypress",
+    "test:e2e": "start-server-and-test dev http://localhost:6666 test:cypress",
     "test:cypress": "cypress run --browser chrome --headless"
   },
   "dependencies": {
