@@ -70,15 +70,14 @@ const SignupDialog = (props: Props) => {
           status: 'success',
           isClosable: true,
         });
-      } else {
-        toast({
-          title: `Registration failed, please try again`,
-          status: 'error',
-          isClosable: true,
-        });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 

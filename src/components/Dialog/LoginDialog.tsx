@@ -11,6 +11,8 @@ import {
   Grid,
   IconButton,
   Input,
+  InputGroup,
+  InputRightElement,
   Link,
   Text,
   useDisclosure,
@@ -44,12 +46,53 @@ const LoginDialog = (props: Props) => {
   const cancelRef = React.useRef<HTMLButtonElement>(null);
   const toast = useToast();
   const [email, setEmail] = useState<string>('');
+  const [emailcode, setEmailCode] = useState<string>('');
 
   const handleEmailChange = (event: any) => {
     setEmail(event.target.value);
   };
 
+  const handleEmailCodeChange = (event: any) => {
+    setEmailCode(event.target.value);
+  };
+
   const onLogin = async () => {
+    if (!email || email === '') {
+      toast({
+        title: `Email can not be empty`,
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!emailRegex.test(email as string)) {
+      toast({
+        title: `Email is incorrect`,
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const response: any = await axios.post(Http.userLogin, {
+        email: email,
+      });
+
+      if (response.code === 10200 && response.result) {
+        toast({
+          title: `sent successful`,
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onLoginByCode = async () => {
     if (!email || email === '') {
       toast({
         title: `Email can not be empty`,
@@ -67,9 +110,19 @@ const LoginDialog = (props: Props) => {
       return;
     }
 
+    if (!emailcode || emailcode === '') {
+      toast({
+        title: `Email code can not be empty`,
+        status: 'error',
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
-      const response: any = await axios.post(Http.userLogin, {
+      const response: any = await axios.post(Http.userLoginByCode, {
         email: email,
+        code: emailcode,
       });
 
       if (response.code === 10200 && response.result) {
@@ -144,8 +197,16 @@ const LoginDialog = (props: Props) => {
             <Button leftIcon={<Google />} colorScheme="teal" variant="outline" width={'100%'}>
               <Text>Continue with Google</Text>
             </Button>
-            <Input placeholder="Enter email" mt={5} value={email} onChange={handleEmailChange} />
-            <Button colorScheme="blue" textAlign={'center'} width={'100%'} mt={5} onClick={onLogin}>
+            <InputGroup mt={5}>
+              <Input pr="4.5rem" placeholder="Enter email" value={email} onChange={handleEmailChange} />
+              <InputRightElement width="5rem" pr={2}>
+                <Button size="sm" onClick={onLogin}>
+                  get code
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            <Input placeholder="Enter email code" mt={5} value={emailcode} onChange={handleEmailCodeChange} />
+            <Button colorScheme="blue" textAlign={'center'} width={'100%'} mt={5} onClick={onLoginByCode}>
               <Text>Log in with email</Text>
             </Button>
             <Text textAlign={'center'} py={4}>

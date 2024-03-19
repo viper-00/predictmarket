@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 export class Http {
-  // static httpPath = 'http://127.0.0.1:8888/api/';
-  static httpPath = 'https://api.predictmarket.xyz/api/';
+  static httpPath = 'http://127.0.0.1:8888/api/';
+  // static httpPath = 'https://api.predictmarket.xyz/api/';
 
   // test
   static test = this.httpPath + 'client/test';
@@ -10,6 +10,7 @@ export class Http {
   static userRegister = this.httpPath + 'client/register';
   static userVerifyInvitation = this.httpPath + 'client/verify-invitation';
   static userLogin = this.httpPath + 'client/login';
+  static userLoginByCode = this.httpPath + 'client/login-by-code';
   static userProfile = this.httpPath + 'client/user-profile';
 
   // user
