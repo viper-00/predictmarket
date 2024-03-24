@@ -47,6 +47,7 @@ import { Http } from 'packages/core/http/http';
 import { UserCoinBalance } from 'packages/types';
 import { OP_SCAN_LINK } from 'packages/constants';
 import { getEthBalance, getUsdcBalance, getUsdtBalance } from 'lib/store/balance';
+import CustomButton from 'components/Button/CustomButton';
 
 const Wallet = () => {
   const [contractAddress, setContractAddress] = useState<string>('');
@@ -57,8 +58,8 @@ const Wallet = () => {
 
   useEffect(() => {
     setContractAddress(getUserContractAddress());
-    setEthBalance(getEthBalance())
-    setUsdtBalance(getUsdtBalance())
+    setEthBalance(getEthBalance());
+    setUsdtBalance(getUsdtBalance());
   }, []);
 
   return (
@@ -118,6 +119,7 @@ const Wallet = () => {
                       await navigator.clipboard.writeText(contractAddress);
 
                       toast({
+                        position: 'top',
                         title: `Copied successfully`,
                         status: 'success',
                         isClosable: true,
@@ -130,22 +132,21 @@ const Wallet = () => {
                     <FaQrcode />
                   </Box>
                 </Flex>
-                <Button
-                  colorScheme="blue"
-                  size={'lg'}
-                  ml={2}
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(contractAddress);
-
-                    toast({
-                      title: `Copied successfully`,
-                      status: 'success',
-                      isClosable: true,
-                    });
-                  }}
-                >
-                  Copy
-                </Button>
+                <Box ml={2}>
+                  <CustomButton
+                    text={'Copy'}
+                    size={'lg'}
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(contractAddress);
+                      toast({
+                        position: 'top',
+                        title: `Copied successfully`,
+                        status: 'success',
+                        isClosable: true,
+                      });
+                    }}
+                  />
+                </Box>
               </Flex>
             </Box>
 
@@ -281,17 +282,15 @@ const Wallet = () => {
                 </Box>
               </Flex>
             </Box>
-            <Button
-              mt={5}
-              width={'100%'}
-              leftIcon={<IoChatboxEllipsesOutline />}
-              colorScheme="teal"
-              variant="outline"
-              borderWidth={1}
-              borderRadius={10}
-            >
-              Chat with a human
-            </Button>
+            <Box mt={5}>
+              <CustomButton
+                text="Chat with a human"
+                width={'100%'}
+                leftIcon={<IoChatboxEllipsesOutline />}
+                colorScheme="teal"
+                variant="outline"
+              />
+            </Box>
 
             <Box borderWidth={1} borderRadius={10} p={5} mt={5}>
               <Text fontSize={'14'}>TUTORIALS</Text>

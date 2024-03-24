@@ -1,4 +1,5 @@
 import { AbsoluteCenter, Box, Button, Container, Flex, Image, Text, Center } from '@chakra-ui/react';
+import CustomButton from 'components/Button/CustomButton';
 import MetaTags from 'components/Common/MetaTags';
 import Link from 'next/link';
 import { PRED_APP_NAME } from 'packages/constants';
@@ -24,7 +25,7 @@ const Custom404 = () => {
           <Text className="text-4xl font-bold">404</Text>
           <Box className="mb-6">This page could not be found.</Box>
           <Link href="/">
-            <Button variant="surface">Go Home</Button>
+            <CustomButton variant="surface" text={'Go Home'} />
           </Link>
         </Flex>
       </Center>

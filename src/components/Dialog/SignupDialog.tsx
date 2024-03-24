@@ -22,6 +22,7 @@ import { Http } from 'packages/core/http/http';
 import React, { useState } from 'react';
 import { MdPhone } from 'react-icons/md';
 import axios from 'packages/core/http/axios';
+import CustomButton from 'components/Button/CustomButton';
 
 type Props = {
   isOpen: boolean;
@@ -41,6 +42,7 @@ const SignupDialog = (props: Props) => {
   const onRegister = async () => {
     if (!email || email === '') {
       toast({
+        position: 'top',
         title: `Email can not be empty`,
         status: 'error',
         isClosable: true,
@@ -49,6 +51,7 @@ const SignupDialog = (props: Props) => {
     }
     if (!emailRegex.test(email as string)) {
       toast({
+        position: 'top',
         title: `Email is incorrect`,
         status: 'error',
         isClosable: true,
@@ -66,6 +69,7 @@ const SignupDialog = (props: Props) => {
         setEmail('');
         props.onClose();
         toast({
+          position: 'top',
           title: `The certification email has been sent successfully, please go to your mailbox to check`,
           status: 'success',
           isClosable: true,
@@ -74,6 +78,7 @@ const SignupDialog = (props: Props) => {
     } catch (e: any) {
       console.error(e);
       toast({
+        position: 'top',
         title: e.message,
         status: 'error',
         isClosable: true,
@@ -98,13 +103,24 @@ const SignupDialog = (props: Props) => {
           </AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>
-            <Button leftIcon={<Google />} colorScheme="teal" variant="outline" width={'100%'}>
-              <Text>Continue with Google</Text>
-            </Button>
+            <CustomButton
+              leftIcon={<Google />}
+              colorScheme="teal"
+              variant="outline"
+              width={'100%'}
+              text={'Continue with Google'}
+            />
             <Input placeholder="Enter email" mt={5} value={email} onChange={handleEmailChange} />
-            <Button colorScheme="blue" textAlign={'center'} width={'100%'} mt={5} onClick={onRegister}>
-              <Text>Sign up with email</Text>
-            </Button>
+            <Box mt={4}>
+              <CustomButton
+                textAlign={'center'}
+                width={'100%'}
+                text={'Sign up with email'}
+                onClick={async () => {
+                  onRegister()
+                }}
+              />
+            </Box>
             <Text textAlign={'center'} py={4}>
               OR
             </Text>

@@ -56,6 +56,7 @@ import LogoBlack from 'assets/images/logo_black.svg';
 import LogoWhite from 'assets/images/logo_white.svg';
 import Image from 'next/image';
 import { getUsdtBalance } from 'lib/store/balance';
+import CustomButton from 'components/Button/CustomButton';
 
 const HomeNav = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -108,8 +109,14 @@ const HomeNav = () => {
           }));
           setNotification(nos);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
+        toast({
+          position: 'top',
+          title: e.message,
+          status: 'error',
+          isClosable: true,
+        });
       }
     }
   };
@@ -136,7 +143,7 @@ const HomeNav = () => {
   };
 
   return (
-    <Box pl={7} pr={3} paddingTop={5} borderTopWidth={1} borderBottomWidth={1}>
+    <Box pl={7} pr={3} py={5} borderTopWidth={1} borderBottomWidth={1}>
       <Grid templateColumns="repeat(3, 1fr)" gap={6}>
         <GridItem colSpan={2}>
           <Flex alignItems={'center'}>
@@ -201,7 +208,7 @@ const HomeNav = () => {
                   <Link href="/portfolio" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                     <Flex flexDirection={'column'} alignItems={'center'}>
                       <Text fontSize={14} color={'#27ae60'}>
-                        $0.00
+                        0(U)
                       </Text>
                       <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                         Portfolio
@@ -211,7 +218,7 @@ const HomeNav = () => {
                   <Link href="/wallet" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                     <Flex flexDirection={'column'} alignItems={'center'}>
                       <Text fontSize={14} color={'#27ae60'}>
-                        {usdtBalance}
+                        {usdtBalance}(U)
                       </Text>
                       <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                         Cash
@@ -219,14 +226,21 @@ const HomeNav = () => {
                     </Flex>
                   </Link>
                   <Box mx={2}>
-                    <Button
+                    {/* <Button
                       colorScheme="blue"
                       onClick={() => {
                         window.location.href = '/wallet';
                       }}
                     >
                       <Text>Deposit</Text>
-                    </Button>
+                    </Button> */}
+                    <CustomButton
+                      colorScheme={'blue'}
+                      text="Deposit"
+                      onClick={async () => {
+                        window.location.href = '/wallet';
+                      }}
+                    />
                   </Box>
                   <Box mx={2}>
                     <Button
@@ -285,12 +299,22 @@ const HomeNav = () => {
               ) : (
                 <>
                   <ButtonGroup spacing="2" ml={2}>
-                    <Button colorScheme="blue" variant="outline" onClick={onLogInOpen}>
-                      <Text>Log In</Text>
-                    </Button>
-                    <Button colorScheme="blue" fill={'blue'} onClick={onSignUpOpen}>
-                      <Text>Sign Up</Text>
-                    </Button>
+                    <CustomButton
+                      colorScheme="blue"
+                      variant="solid"
+                      onClick={async () => {
+                        onLogInOpen();
+                      }}
+                      text={'Log In'}
+                    />
+                    <CustomButton
+                      colorScheme="blue"
+                      variant="outline"
+                      onClick={async () => {
+                        onSignUpOpen();
+                      }}
+                      text={'Sign Up'}
+                    />
                   </ButtonGroup>
                 </>
               )}
@@ -356,6 +380,7 @@ const HomeNav = () => {
                                   await navigator.clipboard.writeText(contractAddress);
 
                                   toast({
+                                    position: 'top',
                                     title: `Copied successfully`,
                                     status: 'success',
                                     isClosable: true,
@@ -369,7 +394,7 @@ const HomeNav = () => {
                         <Flex py={2}>
                           <Link href="/portfolio">
                             <Flex flexDirection={'column'}>
-                              <Text fontWeight={'bold'}>$0.00</Text>
+                              <Text fontWeight={'bold'}>0(U)</Text>
                               <Flex alignItems={'center'}>
                                 <Text pr={1}>Portfolio</Text>
                                 <FaArrowRight />
@@ -378,7 +403,7 @@ const HomeNav = () => {
                           </Link>
                           <Link href="/wallet" ml={2}>
                             <Flex flexDirection={'column'} pl={2}>
-                              <Text fontWeight={'bold'}>{usdtBalance}</Text>
+                              <Text fontWeight={'bold'}>{usdtBalance}(U)</Text>
                               <Flex alignItems={'center'}>
                                 <Text pr={1}>Cash</Text>
                                 <FaArrowRight />
@@ -465,7 +490,7 @@ const HomeNav = () => {
         </GridItem>
       </Grid>
 
-      <Flex gap={6} mt={4}>
+      {/* <Flex gap={6} mt={4}>
         <Link href="#" style={{ textDecoration: 'none' }}>
           <Text
             height={38}
@@ -576,7 +601,7 @@ const HomeNav = () => {
             Crypto
           </Text>
         </Link>
-      </Flex>
+      </Flex> */}
 
       <LoginDialog onClose={onLogInClose} onOpen={onLogInOpen} isOpen={isLogInOpen} />
       <SignupDialog onClose={onSignUpClose} onOpen={onSignUpOpen} isOpen={isSignUpOpen} />

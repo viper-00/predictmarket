@@ -2,7 +2,6 @@ import {
   Progress,
   Box,
   ButtonGroup,
-  Button,
   Heading,
   Flex,
   FormControl,
@@ -67,6 +66,7 @@ import HomeNav from 'components/Navbar/HomeNav';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import {
+  EventCommentType,
   EventOrder,
   EventOrderStringType,
   EventOrderType,
@@ -83,6 +83,7 @@ import { FcLike } from 'react-icons/fc';
 import { CheckIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { getUserAuthorization, getUserContractAddress, setUserContractAddress } from 'lib/store/user';
 import { getUsdtBalance } from 'lib/store/balance';
+import CustomButton from 'components/Button/CustomButton';
 
 const Event = () => {
   const {
@@ -92,6 +93,7 @@ const Event = () => {
 
   const [event, setEvent] = useState<EventType>();
   const [eventPlay, setEventPlay] = useState<EventPlayType>();
+  const [eventComment, setEventComment] = useState<EventCommentType[]>([]);
   const [currentEventPlay, setCurrentEventPlay] = useState<EventPlayValueType>();
   // const [currentOrder, setCurrentOrder] = useState<string>();
   const [currentAmount, setCurrentAmount] = useState<string>('');
@@ -101,6 +103,12 @@ const Event = () => {
   const [sellLoading, setSellLoading] = useState<boolean>(false);
   const [userAddress, setUserAddress] = useState<string>('');
   const [isSettlement, setIsSettlement] = useState<boolean>(false);
+  const [currentOrigin, setCurrentOrigin] = useState<string>('');
+  const [comment, setComment] = useState<string>('');
+
+  const onChangeComment = (event: any) => {
+    setComment(event.target.value);
+  };
 
   const onChangeDec = () => {
     const value = parseFloat(currentAmount) - 1;
@@ -116,107 +124,110 @@ const Event = () => {
     }
   };
 
-  useEffect(() => {
-    async function init() {
-      setUsdtBalance(getUsdtBalance());
-      setUserAddress(getUserContractAddress());
+  async function init() {
+    if (typeof window !== 'undefined') {
+      setCurrentOrigin(window.location.origin);
+    }
 
-      const response: any = await axios.get(Http.marketEvent, {
-        params: {
-          code: id,
-        },
-      });
-      if (response.code === 10200 && response.result) {
-        const eventResult = response.data.event;
-        const playResult = response.data.play;
-        const commentResult = response.data.comment;
-        setIsSettlement(response.data.is_settlement);
-        // const orderResult = response.data.order;
+    setUsdtBalance(getUsdtBalance());
+    setUserAddress(getUserContractAddress());
 
-        // if (orderResult) {
-        //   let orders: EventOrder[] = [];
+    const response: any = await axios.get(Http.marketEvent, {
+      params: {
+        code: id,
+      },
+    });
+    if (response.code === 10200 && response.result) {
+      const eventResult = response.data.event;
+      const playResult = response.data.play;
+      const commentResult = response.data.comment;
+      setIsSettlement(response.data.is_settlement);
 
-        //   for (const element of orderResult) {
-        //     let order: EventOrder = {
-        //       amount: element.amount,
-        //       orderType: element.play_value,
-        //       playValue: element.order_type,
-        //       userAddress: element.user_address,
-        //       username: element.username,
-        //     };
+      if (eventResult) {
+        let e: EventType = {
+          createdTime: eventResult.created_time,
+          eventLogo: eventResult.event_logo,
+          eventStatus: eventResult.event_status,
+          expireTime: eventResult.expire_time,
+          rosolverAddress: eventResult.rosolver_address,
+          title: eventResult.title,
+          uniqueCode: eventResult.unique_website_code,
+          playId: eventResult.play_id,
+          type: eventResult.type,
+          settlementTime: eventResult.settlement_time,
+          settlementHash: eventResult.settlement_hash,
+        };
+        setEvent(e);
+      }
 
-        //     orders.push(order);
-        //   }
-
-        //   setEventOrder(orders);
-        // }
-
-        if (eventResult) {
-          let e: EventType = {
-            createdTime: eventResult.created_time,
-            eventLogo: eventResult.event_logo,
-            eventStatus: eventResult.event_status,
-            expireTime: eventResult.expire_time,
-            rosolverAddress: eventResult.rosolver_address,
-            title: eventResult.title,
-            uniqueCode: eventResult.unique_website_code,
-            playId: eventResult.play_id,
-            type: eventResult.type,
-            settlementTime: eventResult.settlement_time,
-            settlementHash: eventResult.settlement_hash,
+      if (commentResult) {
+        var comments: EventCommentType[] = [];
+        for (const element of commentResult) {
+          let c: EventCommentType = {
+            username: element.username,
+            avatarUrl: element.avatar_url,
+            content: element.content,
+            commentId: element.comment_id,
+            createdTime: element.created_time,
+            userAddress: element.user_address,
+            likeCount: element.like_count,
+            ownLikeStatus: element.own_like_status,
           };
-          setEvent(e);
+          comments.push(c);
         }
+        setEventComment(comments);
+      }
 
-        if (playResult) {
-          let values: EventPlayValueType[] = [];
+      if (playResult) {
+        let values: EventPlayValueType[] = [];
 
-          if (playResult.values) {
-            for (const element of playResult.values) {
-              let e: EventPlayValueType = {
-                value: element.value,
-                orders: [],
-              };
+        if (playResult.values) {
+          for (const element of playResult.values) {
+            let e: EventPlayValueType = {
+              value: element.value,
+              orders: [],
+            };
 
-              var orders: EventOrder[] = [];
+            var orders: EventOrder[] = [];
 
-              if (element.orders && element.orders.length > 0) {
-                for (const orderElement of element.orders) {
-                  let order: EventOrder = {
-                    amount: orderElement.amount,
-                    orderType: orderElement.order_type,
-                    userAddress: orderElement.user_address,
-                    username: orderElement.username,
-                    createdTime: orderElement.created_time,
-                    hash: orderElement.hash,
-                  };
+            if (element.orders && element.orders.length > 0) {
+              for (const orderElement of element.orders) {
+                let order: EventOrder = {
+                  amount: orderElement.amount,
+                  orderType: orderElement.order_type,
+                  userAddress: orderElement.user_address,
+                  username: orderElement.username,
+                  createdTime: orderElement.created_time,
+                  hash: orderElement.hash,
+                };
 
-                  orders.push(order);
-                }
+                orders.push(order);
               }
-
-              e.orders = orders;
-
-              values.push(e);
             }
-          }
 
-          let t: EventPlayType = {
-            title: playResult.title,
-            introduce: playResult.introduce,
-            guessNumber: playResult.guess_number,
-            minimumCapitalPool: playResult.minimum_capital_pool,
-            maximumCapitalPool: playResult.maximum_capital_pool,
-            coin: playResult.coin,
-            pledgeAmount: playResult.pledge_amount,
-            values: values,
-          };
-          setEventPlay(t);
-          setCurrentAmount(t.minimumCapitalPool.toString());
-          // setCurrentOrder(t.values[0].value);
+            e.orders = orders;
+
+            values.push(e);
+          }
         }
+
+        let t: EventPlayType = {
+          title: playResult.title,
+          introduce: playResult.introduce,
+          guessNumber: playResult.guess_number,
+          minimumCapitalPool: playResult.minimum_capital_pool,
+          maximumCapitalPool: playResult.maximum_capital_pool,
+          coin: playResult.coin,
+          pledgeAmount: playResult.pledge_amount,
+          values: values,
+        };
+        setEventPlay(t);
+        setCurrentAmount(t.minimumCapitalPool.toString());
       }
     }
+  }
+
+  useEffect(() => {
     if (id && id !== '') {
       init();
     }
@@ -224,7 +235,35 @@ const Event = () => {
 
   const toast = useToast();
 
-  const handleClickPostComment = async () => {};
+  const handleClickPostComment = async () => {
+    try {
+      const response: any = await axios.post(Http.marketEventComment, {
+        code: event?.uniqueCode,
+        content: comment,
+        reply_id: 0,
+      });
+
+      if (response.code === 10200 && response.result) {
+        await init();
+
+        setComment('');
+        toast({
+          position: 'top',
+          title: `Sent successfully`,
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
+    }
+  };
 
   const onChangeCurrentAmount = (event: any) => {
     // if (
@@ -247,14 +286,21 @@ const Event = () => {
 
       if (response.code === 10200 && response.result) {
         toast({
+          position: 'top',
           title: `Successful purchase`,
           status: 'success',
           isClosable: true,
         });
         window.location.reload();
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     } finally {
       setPayLoading(false);
     }
@@ -271,14 +317,21 @@ const Event = () => {
 
       if (response.code === 10200 && response.result) {
         toast({
+          position: 'top',
           title: `Successfully sell`,
           status: 'success',
           isClosable: true,
         });
         window.location.reload();
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     } finally {
       setSellLoading(false);
     }
@@ -315,6 +368,7 @@ const Event = () => {
                     await navigator.clipboard.writeText(window.location.href);
 
                     toast({
+                      position: 'top',
                       title: `Copied successfully`,
                       status: 'success',
                       isClosable: true,
@@ -332,13 +386,14 @@ const Event = () => {
                       item.orders.length > 0 &&
                       item.orders[0].orderType === EventOrderStringType.buy ? (
                         <>
-                          <Button
+                          <CustomButton
+                            text={item.value}
                             colorScheme="red"
                             size="lg"
                             isDisabled={
                               item.orders[0].userAddress === userAddress && event?.eventStatus === 1 ? false : true
                             }
-                            onClick={() => {
+                            onClick={async () => {
                               setCurrentEventPlay(item);
                               if (item.orders[0].userAddress === userAddress) {
                                 if (item.orders[0].orderType === EventOrderStringType.buy) {
@@ -349,11 +404,9 @@ const Event = () => {
                                 }
                               }
                             }}
-                          >
-                            {item.value}
-                          </Button>
+                          />
 
-                          <Link href={window.location.origin + '/profile/' + item.orders[0].userAddress}>
+                          <Link href={currentOrigin + '/profile/' + item.orders[0].userAddress}>
                             <Text fontSize={14} fontWeight={'bold'}>
                               {item.orders[0].username} || USDT({item.orders[0].amount})
                             </Text>
@@ -361,16 +414,15 @@ const Event = () => {
                         </>
                       ) : (
                         <>
-                          <Button
+                          <CustomButton
                             colorScheme="teal"
                             size="lg"
-                            onClick={() => {
+                            text={item.value}
+                            onClick={async () => {
                               setCurrentEventPlay(item);
                               setCurrentOrderStatus(EventOrderStringType.buy);
                             }}
-                          >
-                            {item.value}
-                          </Button>
+                          />
                         </>
                       )}
                     </GridItem>
@@ -399,34 +451,44 @@ const Event = () => {
                   </Circle>
                   <Box ml={4}>
                     <Text fontSize={14}>Resolver</Text>
-                    <Text>{event?.rosolverAddress}</Text>
+                    <Link href={currentOrigin + '/profile/' + event?.rosolverAddress}>
+                      <Text>{event?.rosolverAddress}</Text>
+                    </Link>
                   </Box>
                 </Flex>
+                ·
                 <Box>
-                  {/* <Button colorScheme="green" size="md" onClick={handleClickSettlement} isLoading={settlementLoading}>
-                    Settlement
-                  </Button> */}
                   {event?.eventStatus === 1 && isSettlement && <PasswordModel code={event?.uniqueCode as string} />}
                 </Box>
               </Flex>
             </Box>
 
-            <Box mt={5}>
+            <Box mt={5} mb={10}>
               <Tabs position="relative" variant="unstyled">
                 <TabList borderBottomWidth={1}>
-                  <Tab>Comments(142)</Tab>
-                  <Tab>Activity</Tab>
-                  <Tab>Related</Tab>
+                  {eventComment.length > 0 ? <Tab>Comments({eventComment.length})</Tab> : <Tab>Comments</Tab>}
+                  {/* <Tab>Activity</Tab>
+                  <Tab>Related</Tab> */}
                 </TabList>
                 <TabIndicator mt="-1.5px" height="2px" bg="blue.500" borderRadius="1px" />
                 <TabPanels>
                   <TabPanel px={0}>
                     <InputGroup size="md">
-                      <Input pr="4.5rem" type={'text'} placeholder="Add a comment" />
+                      <Input
+                        pr="4.5rem"
+                        type={'text'}
+                        placeholder="Add a comment"
+                        value={comment}
+                        onChange={onChangeComment}
+                      />
                       <InputRightElement width="4.5rem">
-                        <Button h="1.75rem" size="sm" onClick={handleClickPostComment}>
-                          Post
-                        </Button>
+                        <CustomButton
+                          size="sm"
+                          onClick={async () => {
+                            handleClickPostComment();
+                          }}
+                          text={'Post'}
+                        />
                       </InputRightElement>
                     </InputGroup>
                     <Flex alignItems={'center'} mt={5}>
@@ -440,131 +502,23 @@ const Event = () => {
                     </Flex>
 
                     <Grid rowGap={6} mt={6}>
-                      <Flex>
-                        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-                        <Box ml={4}>
-                          <Flex alignItems={'center'}>
-                            <Text fontWeight={'bold'}>tetrissss</Text>
-                            <Text ml={2} color={'#828282'} fontSize={14}>
-                              1d ago
-                            </Text>
-                          </Flex>
-                          <Text mt={2}>Boden is MY president</Text>
-                          <Flex alignItems={'center'} mt={2}>
-                            <FcLikePlaceholder />
-                            {/* <FcLike /> */}
-                            <Text color={'#828282'} ml={2} fontSize={14}>
-                              0
-                            </Text>
-                            <Text ml={2} color={'#828282'} fontSize={14}>
-                              Reply
-                            </Text>
-                          </Flex>
-                        </Box>
-                      </Flex>
-                      <Flex>
-                        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-                        <Box ml={4}>
-                          <Flex>
-                            <Text>tetrissss</Text>
-                            <Text ml={2}>1d ago</Text>
-                          </Flex>
-                          <Text mt={2}>Boden is MY president</Text>
-                          <Flex alignItems={'center'} mt={2}>
-                            <FcLikePlaceholder />
-                            {/* <FcLike /> */}
-                            <Text color={'#828282'} ml={2} fontSize={14}>
-                              0
-                            </Text>
-                            <Text ml={2} color={'#828282'} fontSize={14}>
-                              Reply
-                            </Text>
-                          </Flex>
-                        </Box>
-                      </Flex>
-                      <Flex>
-                        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-                        <Box ml={4}>
-                          <Flex>
-                            <Text>tetrissss</Text>
-                            <Text ml={2}>1d ago</Text>
-                          </Flex>
-                          <Text mt={2}>Boden is MY president</Text>
-                          <Flex alignItems={'center'} mt={2}>
-                            <FcLikePlaceholder />
-                            {/* <FcLike /> */}
-                            <Text color={'#828282'} ml={2} fontSize={14}>
-                              0
-                            </Text>
-                            <Text ml={2} color={'#828282'} fontSize={14}>
-                              Reply
-                            </Text>
-                          </Flex>
-                        </Box>
-                      </Flex>
-                      <Flex>
-                        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-                        <Box ml={4}>
-                          <Flex>
-                            <Text>tetrissss</Text>
-                            <Text ml={2}>1d ago</Text>
-                          </Flex>
-                          <Text mt={2}>Boden is MY president</Text>
-                          <Flex alignItems={'center'} mt={2}>
-                            <FcLikePlaceholder />
-                            {/* <FcLike /> */}
-                            <Text color={'#828282'} ml={2} fontSize={14}>
-                              0
-                            </Text>
-                            <Text ml={2} color={'#828282'} fontSize={14}>
-                              Reply
-                            </Text>
-                          </Flex>
-                        </Box>
-                      </Flex>
-                      <Flex>
-                        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-                        <Box ml={4}>
-                          <Flex>
-                            <Text>tetrissss</Text>
-                            <Text ml={2}>1d ago</Text>
-                          </Flex>
-                          <Text mt={2}>Boden is MY president</Text>
-                          <Flex alignItems={'center'} mt={2}>
-                            <FcLikePlaceholder />
-                            {/* <FcLike /> */}
-                            <Text color={'#828282'} ml={2} fontSize={14}>
-                              0
-                            </Text>
-                            <Text ml={2} color={'#828282'} fontSize={14}>
-                              Reply
-                            </Text>
-                          </Flex>
-                        </Box>
-                      </Flex>
-                      <Flex>
-                        <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-                        <Box ml={4}>
-                          <Flex>
-                            <Text>tetrissss</Text>
-                            <Text ml={2}>1d ago</Text>
-                          </Flex>
-                          <Text mt={2}>Boden is MY president</Text>
-                          <Flex alignItems={'center'} mt={2}>
-                            <FcLikePlaceholder />
-                            {/* <FcLike /> */}
-                            <Text color={'#828282'} ml={2} fontSize={14}>
-                              0
-                            </Text>
-                            <Text ml={2} color={'#828282'} fontSize={14}>
-                              Reply
-                            </Text>
-                          </Flex>
-                        </Box>
-                      </Flex>
+                      {eventComment &&
+                        eventComment.map((item, index) => (
+                          <EventComment
+                            key={index}
+                            content={item.content}
+                            avatarUrl={item.avatarUrl}
+                            username={item.username}
+                            createTime={item.createdTime}
+                            likeCount={item.likeCount}
+                            ownLikeStatus={item.ownLikeStatus}
+                            commentId={item.commentId}
+                            init={init}
+                          />
+                        ))}
                     </Grid>
                   </TabPanel>
-                  <TabPanel px={0} pt={0}>
+                  {/* <TabPanel px={0} pt={0}>
                     <Flex alignItems={'center'} justifyContent="space-between" py={5} borderBottomWidth={1}>
                       <Flex alignItems={'center'}>
                         <Avatar size="sm" name="Event logo" src={event?.eventLogo} />
@@ -663,10 +617,10 @@ const Event = () => {
                           </Text>
                         </Box>
                         <Flex>
-                          <Button colorScheme="blue" mr={2}>
-                            Buy
-                          </Button>
-                          <Button colorScheme="blue">Sell</Button>
+                          <Box mr={2}>
+                            <CustomButton text="Buy" />
+                          </Box>
+                          <CustomButton text="Sell" />
                         </Flex>
                       </Flex>
                     </Link>
@@ -691,10 +645,10 @@ const Event = () => {
                           </Text>
                         </Box>
                         <Flex>
-                          <Button colorScheme="blue" mr={2}>
-                            Buy
-                          </Button>
-                          <Button colorScheme="blue">Sell</Button>
+                          <Box mr={2}>
+                            <CustomButton text="Buy" />
+                          </Box>
+                          <CustomButton text="Sell" />
                         </Flex>
                       </Flex>
                     </Link>
@@ -719,10 +673,10 @@ const Event = () => {
                           </Text>
                         </Box>
                         <Flex>
-                          <Button colorScheme="blue" mr={2}>
-                            Buy
-                          </Button>
-                          <Button colorScheme="blue">Sell</Button>
+                          <Box mr={2}>
+                            <CustomButton text="Buy" />
+                          </Box>
+                          <CustomButton text="Sell" />
                         </Flex>
                       </Flex>
                     </Link>
@@ -747,10 +701,10 @@ const Event = () => {
                           </Text>
                         </Box>
                         <Flex>
-                          <Button colorScheme="blue" mr={2}>
-                            Buy
-                          </Button>
-                          <Button colorScheme="blue">Sell</Button>
+                          <Box mr={2}>
+                            <CustomButton text="Buy" />
+                          </Box>
+                          <CustomButton text="Sell" />
                         </Flex>
                       </Flex>
                     </Link>
@@ -775,14 +729,14 @@ const Event = () => {
                           </Text>
                         </Box>
                         <Flex>
-                          <Button colorScheme="blue" mr={2}>
-                            Buy
-                          </Button>
-                          <Button colorScheme="blue">Sell</Button>
+                          <Box mr={2}>
+                            <CustomButton text="Buy" />
+                          </Box>
+                          <CustomButton text="Sell" />
                         </Flex>
                       </Flex>
                     </Link>
-                  </TabPanel>
+                  </TabPanel> */}
                 </TabPanels>
               </Tabs>
             </Box>
@@ -877,34 +831,35 @@ const Event = () => {
 
                               {currentOrderStatus === EventOrderStringType.buy && (
                                 <>
-                                  <Button
+                                  <CustomButton
+                                    text="Max"
                                     colorScheme="gray"
-                                    size={'xs'}
-                                    onClick={() => {
+                                    size="xs"
+                                    onClick={async () => {
                                       setCurrentAmount((eventPlay?.maximumCapitalPool as number).toString());
                                     }}
-                                  >
-                                    Max
-                                  </Button>
+                                  />
                                 </>
                               )}
                             </Flex>
                           </Flex>
 
                           <HStack mt={4}>
-                            <Button
-                              onClick={onChangeDec}
+                            <CustomButton
+                              text="-"
                               isDisabled={currentOrderStatus === EventOrderStringType.sell && true}
-                            >
-                              -
-                            </Button>
+                              onClick={async () => {
+                                onChangeDec;
+                              }}
+                            />
                             <Input value={currentAmount} onChange={onChangeCurrentAmount} textAlign={'center'} />
-                            <Button
-                              onClick={onChangeInc}
+                            <CustomButton
+                              text="+"
                               isDisabled={currentOrderStatus === EventOrderStringType.sell && true}
-                            >
-                              +
-                            </Button>
+                              onClick={async () => {
+                                onChangeInc;
+                              }}
+                            />
                           </HStack>
 
                           {Number(usdtBalance) < (eventPlay?.guessNumber as number) && (
@@ -914,26 +869,28 @@ const Event = () => {
                           )}
 
                           {EventOrderStringType[currentOrderStatus] === EventOrderStringType.buy && (
-                            <Button
-                              colorScheme="blue"
-                              mt={5}
-                              width={'100%'}
-                              onClick={onClickBuy}
-                              isLoading={payLoading}
-                            >
-                              Buy
-                            </Button>
+                            <Box mt={5}>
+                              <CustomButton
+                                text={'Buy'}
+                                width={'100%'}
+                                onClick={async () => {
+                                  onClickBuy();
+                                }}
+                                isDisabled={Number(usdtBalance) < (eventPlay?.guessNumber as number) ? true : false}
+                              />
+                            </Box>
                           )}
                           {EventOrderStringType[currentOrderStatus] === EventOrderStringType.sell && (
-                            <Button
-                              colorScheme="red"
-                              mt={5}
-                              width={'100%'}
-                              onClick={onClickSell}
-                              isLoading={sellLoading}
-                            >
-                              Sell
-                            </Button>
+                            <Box mt={5}>
+                              <CustomButton
+                                colorScheme="red"
+                                text={'Sell'}
+                                width={'100%'}
+                                onClick={async () => {
+                                  onClickSell();
+                                }}
+                              />
+                            </Box>
                           )}
 
                           {currentOrderStatus === EventOrderStringType.sell && (
@@ -1045,6 +1002,7 @@ const PasswordModel = (params: any) => {
       });
       if (response.code === 10200 && response.result) {
         toast({
+          position: 'top',
           title: `Successfully settlement`,
           status: 'success',
           isClosable: true,
@@ -1053,6 +1011,7 @@ const PasswordModel = (params: any) => {
       }
     } catch (e: any) {
       toast({
+        position: 'top',
         title: e.message,
         status: 'error',
         isClosable: true,
@@ -1064,8 +1023,12 @@ const PasswordModel = (params: any) => {
 
   return (
     <>
-      <Button onClick={onOpen}>Settlement</Button>
-
+      <CustomButton
+        onClick={async () => {
+          onOpen;
+        }}
+        text={'Settlement'}
+      />
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -1074,26 +1037,112 @@ const PasswordModel = (params: any) => {
           <ModalBody pb={6}>
             <FormControl>
               <FormLabel>Enter your password</FormLabel>
-              {/* <Input ref={initialRef} /> */}
               <InputGroup size="md">
                 <Input pr="4.5rem" type={show ? 'text' : 'password'} value={password} onChange={onChangePassword} />
                 <InputRightElement width="4.5rem">
-                  <Button h="1.75rem" size="sm" onClick={handleClick}>
-                    {show ? 'Hide' : 'Show'}
-                  </Button>
+                  <CustomButton
+                    size="sm"
+                    onClick={async () => {
+                      handleClick;
+                    }}
+                    text={show ? 'Hide' : 'Show'}
+                  />
                 </InputRightElement>
               </InputGroup>
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleClickSettlement} isLoading={settlementLoading}>
-              confirm
-            </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Box mr={3}>
+              <CustomButton
+                onClick={async () => {
+                  handleClickSettlement;
+                }}
+                text={'confirm'}
+              />
+            </Box>
+            <CustomButton
+              onClick={async () => {
+                onClose;
+              }}
+              text={'Cancel'}
+            />
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
+  );
+};
+
+type EventCommentProps = {
+  avatarUrl: string;
+  username: string;
+  createTime: number;
+  content: string;
+  likeCount: number;
+  ownLikeStatus: number;
+  commentId: number;
+  init: () => void;
+};
+
+const EventComment = (params: EventCommentProps) => {
+  const { avatarUrl, username, createTime, content, likeCount, ownLikeStatus, commentId, init } = params;
+
+  const toast = useToast();
+
+  const onClickLike = async () => {
+    try {
+      const response: any = await axios.post(Http.marketEventCommentLike, {
+        comment_id: commentId,
+      });
+
+      if (response.code === 10200 && response.result) {
+        await init();
+
+        toast({
+          position: 'top',
+          title: `Update successfully`,
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
+    }
+  };
+
+  return (
+    <Flex>
+      <Avatar name="user avatar" src={avatarUrl} />
+      <Box ml={4}>
+        <Flex alignItems={'center'}>
+          <Text fontWeight={'bold'}>{username}</Text>
+          <Text ml={2} color={'#828282'} fontSize={14}>
+            {formatTimestamp(new Date(createTime).getTime())}
+          </Text>
+        </Flex>
+        <Text mt={2}>{content}</Text>
+        <Flex alignItems={'center'} mt={2}>
+          <IconButton
+            aria-label="like"
+            icon={ownLikeStatus == 1 ? <FcLike /> : <FcLikePlaceholder />}
+            isRound={true}
+            onClick={onClickLike}
+          />
+          <Text color={'#828282'} ml={2} fontSize={14}>
+            {likeCount}
+          </Text>
+          {/* <Text ml={2} color={'#828282'} fontSize={14}>
+            Reply
+          </Text> */}
+        </Flex>
+      </Box>
+    </Flex>
   );
 };

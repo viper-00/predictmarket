@@ -120,6 +120,17 @@ export type UserCoinBalance = {
   usdc: string;
 };
 
+export type EventCommentType = {
+  username: string;
+  avatarUrl: string;
+  content: string;
+  commentId: number;
+  createdTime: number;
+  userAddress: string;
+  likeCount: number;
+  ownLikeStatus: number;
+};
+
 export type EventPlayType = {
   title: string;
   introduce: string;
@@ -193,4 +204,15 @@ export type UserNotificationSetting = {
   eventUpdate: number;
   orderUpdate: number;
   cryptoPriceUpdate: number;
+};
+
+export type HomeEventType = {
+  eventLogo: string;
+  expireTime: number;
+  title: string;
+  uniqueCode: string;
+  type: string;
+  settlementTime: number;
+  totalOrderAmount: number;
+  commentCount: number;
 };

@@ -25,6 +25,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import CustomButton from 'components/Button/CustomButton';
 import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
 import { IoStatsChart } from 'react-icons/io5';
@@ -54,9 +55,9 @@ const Affiliate = () => {
                 <Text fontWeight={'bold'} fontSize={20}>
                   $0.00
                 </Text>
-                <Button backgroundColor={'#000'} color={'#fff'} width={'100%'} mt={5}>
-                  Withdraw
-                </Button>
+                <Box mt={5}>
+                  <CustomButton width={'100%'} text={'Withdraw'} backgroundColor={'#000'} color={'#fff'} />
+                </Box>
               </Box>
             </GridItem>
             <GridItem colSpan={3}>
@@ -65,9 +66,7 @@ const Affiliate = () => {
                 <InputGroup size="md" mt={2}>
                   <Input pr="4.5rem" placeholder="Set your own affiliate code" />
                   <InputRightElement width="4.5rem">
-                    <Button h="1.75rem" size="sm" onClick={() => {}}>
-                      Set
-                    </Button>
+                    <CustomButton size="sm" text={'Set'} />
                   </InputRightElement>
                 </InputGroup>
                 <Flex alignItems={'center'}>
@@ -83,9 +82,7 @@ const Affiliate = () => {
                     <Text width={'100%'} backgroundColor={'#f2f2f2'} py={2} borderRadius={10} px={4} mr={2}>
                       https://www.predictmarket.xyz/?ref=
                     </Text>
-                    <Button leftIcon={<CopyIcon />} backgroundColor={'#000'} color={'#fff'} px={8}>
-                      Copy Link
-                    </Button>
+                    <CustomButton leftIcon={<CopyIcon />} backgroundColor={'#000'} color={'#fff'} text={'Copy Link'} />
                   </Flex>
                 </Box>
               </Box>

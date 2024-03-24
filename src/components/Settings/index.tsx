@@ -27,6 +27,7 @@ import { useEffect, useState } from 'react';
 import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { UserNotificationSetting, UserProfile } from 'packages/types';
+import CustomButton from 'components/Button/CustomButton';
 
 const Settings = () => {
   const toast = useToast();
@@ -62,8 +63,14 @@ const Settings = () => {
           setNoSetting(n);
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   }
 
@@ -81,13 +88,20 @@ const Settings = () => {
         init();
 
         toast({
+          position: 'top',
           title: `Update completed`,
           status: 'success',
           isClosable: true,
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
@@ -109,8 +123,14 @@ const Settings = () => {
           avatarUrl: response.data.file_url,
         }));
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
@@ -125,13 +145,20 @@ const Settings = () => {
         init();
 
         toast({
+          position: 'top',
           title: `Update completed`,
           status: 'success',
           isClosable: true,
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
@@ -169,10 +196,6 @@ const Settings = () => {
                   <Box ml={5}>
                     <Input size="md" type="file" onChange={onChangeAvatar} />
                   </Box>
-
-                  {/* <Button leftIcon={<MdPhotoCamera />} colorScheme="gray" size={'sm'} ml={5} borderRadius={'50'}>
-                    <Text>Upload</Text>
-                  </Button> */}
                 </Flex>
                 <Box mt={5}>
                   <Text fontWeight={'bold'}>Email</Text>
@@ -204,9 +227,16 @@ const Settings = () => {
                     }}
                   />
                 </Box>
-                <Button colorScheme="messenger" size="lg" mt={5} onClick={onSaveChanges}>
-                  Save changes
-                </Button>
+                <Box mt={5}>
+                  <CustomButton
+                    text={'Save changes'}
+                    colorScheme="messenger"
+                    size="lg"
+                    onClick={async () => {
+                      onSaveChanges()
+                    }}
+                  />
+                </Box>
               </TabPanel>
               <TabPanel p={0}>
                 <Text fontWeight={'bold'} fontSize={20}>

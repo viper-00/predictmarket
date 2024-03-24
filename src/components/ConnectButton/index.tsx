@@ -27,12 +27,12 @@ const ConnectButton = () => {
         setWalletAddress({ address: account });
         router.push('/portfolio');
       }
-    } catch (e) {
+    } catch (e: any) {
+      console.error(e);
       toast({
-        title: 'Oops, something went wrong...',
-        description: (e as { message: string })?.message,
+        position: 'top',
+        title: e.message,
         status: 'error',
-        position: 'top-right',
         isClosable: true,
       });
     }

@@ -35,6 +35,7 @@ import {
   setUserEmail,
   setUserBio,
 } from 'lib/store/user';
+import CustomButton from 'components/Button/CustomButton';
 
 type Props = {
   isOpen: boolean;
@@ -59,6 +60,7 @@ const LoginDialog = (props: Props) => {
   const onLogin = async () => {
     if (!email || email === '') {
       toast({
+        position: 'top',
         title: `Email can not be empty`,
         status: 'error',
         isClosable: true,
@@ -68,6 +70,7 @@ const LoginDialog = (props: Props) => {
 
     if (!emailRegex.test(email as string)) {
       toast({
+        position: 'top',
         title: `Email is incorrect`,
         status: 'error',
         isClosable: true,
@@ -82,19 +85,27 @@ const LoginDialog = (props: Props) => {
 
       if (response.code === 10200 && response.result) {
         toast({
+          position: 'top',
           title: `sent successful`,
           status: 'success',
           isClosable: true,
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
   const onLoginByCode = async () => {
     if (!email || email === '') {
       toast({
+        position: 'top',
         title: `Email can not be empty`,
         status: 'error',
         isClosable: true,
@@ -103,6 +114,7 @@ const LoginDialog = (props: Props) => {
     }
     if (!emailRegex.test(email as string)) {
       toast({
+        position: 'top',
         title: `Email is incorrect`,
         status: 'error',
         isClosable: true,
@@ -112,6 +124,7 @@ const LoginDialog = (props: Props) => {
 
     if (!emailcode || emailcode === '') {
       toast({
+        position: 'top',
         title: `Email code can not be empty`,
         status: 'error',
         isClosable: true,
@@ -140,6 +153,7 @@ const LoginDialog = (props: Props) => {
           const email = response.data.email;
           if (!auth || auth === '') {
             toast({
+              position: 'top',
               title: `Login failed, please confirm that the account has been registered`,
               status: 'error',
               isClosable: true,
@@ -158,6 +172,7 @@ const LoginDialog = (props: Props) => {
 
           props.onClose();
           toast({
+            position: 'top',
             title: `login successful`,
             status: 'success',
             isClosable: true,
@@ -166,14 +181,21 @@ const LoginDialog = (props: Props) => {
           window.location.href = '/';
         } else {
           toast({
+            position: 'top',
             title: `Login failed, please confirm that the account has been registered`,
             status: 'error',
             isClosable: true,
           });
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
@@ -194,21 +216,38 @@ const LoginDialog = (props: Props) => {
           </AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>
-            <Button leftIcon={<Google />} colorScheme="teal" variant="outline" width={'100%'}>
-              <Text>Continue with Google</Text>
-            </Button>
+            <CustomButton
+              leftIcon={<Google />}
+              colorScheme={'teal'}
+              variant={'outline'}
+              text={'Continue with Google'}
+              textAlign={'center'}
+              width={'100%'}
+            ></CustomButton>
             <InputGroup mt={5}>
               <Input pr="4.5rem" placeholder="Enter email" value={email} onChange={handleEmailChange} />
               <InputRightElement width="5rem" pr={2}>
-                <Button size="sm" onClick={onLogin}>
-                  get code
-                </Button>
+                <CustomButton
+                  size={'sm'}
+                  onClick={async () => {
+                    onLogin()
+                  }}
+                  text={'Get Code'}
+                />
               </InputRightElement>
             </InputGroup>
             <Input placeholder="Enter email code" mt={5} value={emailcode} onChange={handleEmailCodeChange} />
-            <Button colorScheme="blue" textAlign={'center'} width={'100%'} mt={5} onClick={onLoginByCode}>
-              <Text>Log in with email</Text>
-            </Button>
+            <Box mt={4}>
+              <CustomButton
+                width={'100%'}
+                colorScheme="blue"
+                textAlign={'center'}
+                onClick={async () => {
+                  onLoginByCode()
+                }}
+                text={'Log in with email'}
+              />
+            </Box>
             <Text textAlign={'center'} py={4}>
               OR
             </Text>

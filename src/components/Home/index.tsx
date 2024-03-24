@@ -59,13 +59,13 @@ const Home = () => {
       <MetaTags title="Home" />
       <HomeNav />
       <Container maxWidth={{ base: '99%', md: '95%', lg: '90%' }}>
-        <Box pt={5}>
+        {/* <Box pt={5}>
           <HomeRecommend />
-        </Box>
-        <Box pt={5}>
+        </Box> */}
+        <Box pt={10}>
           <HomeFeed />
         </Box>
-        <Box pt={5} pb={20}>
+        <Box pt={10} pb={20}>
           <RecentActivity />
         </Box>
       </Container>

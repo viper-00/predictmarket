@@ -2,7 +2,7 @@ import axios from 'axios';
 import { IS_DEVELOPMENT } from 'packages/constants';
 
 export class Http {
-  static httpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8888/api/' : "https://api.predictmarket.xyz/api/";
+  static httpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8888/api/' : 'https://api.predictmarket.xyz/api/';
 
   // test
   static test = this.httpPath + 'client/test';
@@ -12,6 +12,8 @@ export class Http {
   static userLogin = this.httpPath + 'client/login';
   static userLoginByCode = this.httpPath + 'client/login-by-code';
   static userProfile = this.httpPath + 'client/user-profile';
+  static homeEventType = this.httpPath + 'client/market-event-type';
+  static homeEvent = this.httpPath + 'client/market-event';
 
   // user
   static userSetting = this.httpPath + 'client/user/user-setting';

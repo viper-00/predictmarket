@@ -3,6 +3,7 @@ import MetaTags from 'components/Common/MetaTags';
 import { useRouter } from 'next/router';
 import { Http } from 'packages/core/http/http';
 import axios from 'packages/core/http/axios';
+import CustomButton from 'components/Button/CustomButton';
 
 const Confirm = () => {
   const router = useRouter();
@@ -13,6 +14,7 @@ const Confirm = () => {
   const onClickVerify = async () => {
     if (!code || code === '') {
       toast({
+        position: 'top',
         title: `An unknown exception occurred`,
         status: 'error',
         isClosable: true,
@@ -27,19 +29,27 @@ const Confirm = () => {
       });
       if (response.code === 10200 && response.result) {
         toast({
+          position: 'top',
           title: `Account verification successful, please go to the log in`,
           status: 'success',
           isClosable: true,
         });
       } else {
         toast({
+          position: 'top',
           title: `Verification failed, please register an account again`,
           status: 'error',
           isClosable: true,
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
@@ -56,9 +66,9 @@ const Confirm = () => {
               <Text>Clike Verify to create your account.</Text>
             </Center>
 
-            <Button colorScheme="blue" onClick={onClickVerify} mt={4}>
-              Verify
-            </Button>
+            <Box mt={4}>
+              <CustomButton colorScheme="blue" onClick={onClickVerify} text={'Verify'} />
+            </Box>
           </Card>
         </Container>
       </Box>

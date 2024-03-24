@@ -61,6 +61,7 @@ import { Http } from 'packages/core/http/http';
 import { EventPlayType } from 'packages/types';
 import { DEFAULT_CHAIN_ID } from 'packages/constants';
 import { getUserContractAddress } from 'lib/store/user';
+import CustomButton from 'components/Button/CustomButton';
 
 const Form1 = () => {
   const [title, setTitle] = useState<string>(getEventTitle());
@@ -70,6 +71,8 @@ const Form1 = () => {
   const [playTypeList, setPlayTypeList] = useState<EventPlayType[]>([]);
   // const [ruleDetails, setRuleDetails] = useState<string>(getEventRuleDetails());
   const [exipreTime, setExipreTime] = useState<number>(getEventExpireTime());
+
+  const toast = useToast();
 
   const onChangeTitle = (event: any) => {
     setTitle(event.target.value);
@@ -103,8 +106,14 @@ const Form1 = () => {
         if (response.code === 10200 && response.result) {
           setTypeList(response.data);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
+        toast({
+          position: 'top',
+          title: e.message,
+          status: 'error',
+          isClosable: true,
+        });
       }
     }
 
@@ -127,8 +136,14 @@ const Form1 = () => {
           });
           setPlayTypeList(plays);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
+        toast({
+          position: 'top',
+          title: e.message,
+          status: 'error',
+          isClosable: true,
+        });
       }
     }
 
@@ -211,6 +226,7 @@ const Form2 = () => {
   // const [capitalPoolAmount, setCapitalPoolAmount] = useState<number>(getEventCapitalPoolAmount());
   const [password, setPassword] = useState<string>(getEventPassword());
   const [confirmPassword, setConfirmPassword] = useState<string>(getEventConfirmPassword());
+  const toast = useToast();
 
   const onChangeLogo = async (event: any) => {
     const fileInput = event.target.files[0];
@@ -228,8 +244,14 @@ const Form2 = () => {
         setLogo(response.data.file_url);
         setEventLogo(response.data.file_url);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
@@ -302,9 +324,13 @@ const Form2 = () => {
             onChange={onChangePassword}
           />
           <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClickPassword}>
-              {showPassword ? 'Hide' : 'Show'}
-            </Button>
+            <CustomButton
+              size="sm"
+              onClick={async () => {
+                handleClickPassword;
+              }}
+              text={showPassword ? 'Hide' : 'Show'}
+            />
           </InputRightElement>
         </InputGroup>
       </FormControl>
@@ -322,9 +348,13 @@ const Form2 = () => {
             onChange={onChangeConfirmPassword}
           />
           <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClickConfirmPassword}>
-              {showConfirmPassword ? 'Hide' : 'Show'}
-            </Button>
+            <CustomButton
+              size="sm"
+              onClick={async () => {
+                handleClickConfirmPassword;
+              }}
+              text={showConfirmPassword ? 'Hide' : 'Show'}
+            />
           </InputRightElement>
         </InputGroup>
       </FormControl>
@@ -384,6 +414,7 @@ const Post = () => {
 
       if (response.code === 10200 && response.result) {
         toast({
+          position: 'top',
           title: `Successfully create`,
           status: 'success',
           isClosable: true,
@@ -391,8 +422,14 @@ const Post = () => {
         resetEvent();
         window.location.href = '/event/' + response.data.unique_code;
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
     }
   };
 
@@ -415,23 +452,21 @@ const Post = () => {
           <ButtonGroup mt="5%" w="100%">
             <Flex w="100%" justifyContent="space-between">
               <Flex>
-                <Button
-                  onClick={() => {
-                    setStep(step - 1);
-                    setProgress(progress - 33.33);
-                  }}
-                  isDisabled={step === 1}
-                  colorScheme="teal"
-                  variant="solid"
-                  w="7rem"
-                  mr="5%"
-                >
-                  Back
-                </Button>
-                <Button
-                  w="7rem"
+                <Box mr={5}>
+                  <CustomButton
+                    text={'Back'}
+                    onClick={async () => {
+                      setStep(step - 1);
+                      setProgress(progress - 33.33);
+                    }}
+                    isDisabled={step === 1}
+                    colorScheme="teal"
+                  />
+                </Box>
+                <CustomButton
+                  text={'Next'}
                   isDisabled={step === 3}
-                  onClick={() => {
+                  onClick={async () => {
                     setStep(step + 1);
                     if (step === 3) {
                       setProgress(100);
@@ -441,28 +476,16 @@ const Post = () => {
                   }}
                   colorScheme="teal"
                   variant="outline"
-                >
-                  Next
-                </Button>
+                />
               </Flex>
               {step === 3 ? (
-                <Button
-                  w="7rem"
+                <CustomButton
+                  text="Submit"
                   colorScheme="green"
-                  variant="solid"
-                  onClick={
-                    onClickPostEvent
-                    // toast({
-                    //   title: 'Account created.',
-                    //   description: "We've created your account for you.",
-                    //   status: 'success',
-                    //   duration: 3000,
-                    //   isClosable: true,
-                    // });
-                  }
-                >
-                  Submit
-                </Button>
+                  onClick={async () => {
+                    onClickPostEvent()
+                  }}
+                />
               ) : null}
             </Flex>
           </ButtonGroup>

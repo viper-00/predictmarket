@@ -29,6 +29,7 @@ import { useRouter } from 'next/router';
 import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { UserProfile, EventType, EventOrder, EventComment, EventOrderType, EventOrderStringType } from 'packages/types';
+import CustomButton from 'components/Button/CustomButton';
 
 const Profile = () => {
   const {
@@ -112,8 +113,14 @@ const Profile = () => {
             setOrders(orders);
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
+        toast({
+          position: 'top',
+          title: e.message,
+          status: 'error',
+          isClosable: true,
+        });
       }
     }
 
@@ -151,6 +158,7 @@ const Profile = () => {
                       await navigator.clipboard.writeText(userProfile?.contractAddress as string);
 
                       toast({
+                        position: 'top',
                         title: `Copied successfully`,
                         status: 'success',
                         isClosable: true,
@@ -163,14 +171,13 @@ const Profile = () => {
                 </Flex>
               </Box>
             </Flex>
-            <Button
+            <CustomButton
               variant="outline"
-              onClick={() => {
+              onClick={async () => {
                 window.location.href = '/settings';
               }}
-            >
-              Edit Profile
-            </Button>
+              text={'Edit Profile'}
+            />
           </Flex>
         </Box>
 
