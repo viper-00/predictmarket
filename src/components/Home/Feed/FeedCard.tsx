@@ -51,6 +51,7 @@ const FeedCard = (params: homeEvent) => {
       style={{ textDecoration: 'none' }}
       _hover={{ backgroundColor: bgColor }}
       p={5}
+      borderBottomWidth={1}
     >
       <Flex justifyContent={'space-between'} alignItems={'center'}>
         <Flex alignItems={'center'}>
@@ -65,7 +66,7 @@ const FeedCard = (params: homeEvent) => {
           <FaFirstOrderAlt size={20} />
           {totalOrderAmount > 0 ? (
             <>
-              <Text ml={2}>{totalOrderAmount}(USDT)</Text>
+              <Text ml={2}>{totalOrderAmount}  (USDT)</Text>
             </>
           ) : (
             <>

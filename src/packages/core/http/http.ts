@@ -13,7 +13,8 @@ export class Http {
   static userLoginByCode = this.httpPath + 'client/login-by-code';
   static userProfile = this.httpPath + 'client/user-profile';
   static homeEventType = this.httpPath + 'client/market-event-type';
-  static homeEvent = this.httpPath + 'client/market-event';
+  static homeEvent = this.httpPath + 'client/market-event-list';
+  static marketEvent = this.httpPath + 'client/market-event';
 
   // user
   static userSetting = this.httpPath + 'client/user/user-setting';
@@ -23,7 +24,6 @@ export class Http {
   static userBalance = this.httpPath + 'client/user/user-balance';
 
   // event
-  static marketEvent = this.httpPath + 'client/event/market-event';
   static marketEventPlay = this.httpPath + 'client/event/market-event-play';
   static marketEventType = this.httpPath + 'client/event/market-event-type';
 
