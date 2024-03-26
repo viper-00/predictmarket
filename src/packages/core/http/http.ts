@@ -14,6 +14,8 @@ export class Http {
   static userProfile = this.httpPath + 'client/user-profile';
   static homeEventType = this.httpPath + 'client/market-event-type';
   static homeEvent = this.httpPath + 'client/market-event-list';
+  static homeActivity = this.httpPath + 'client/recent-activity';
+  static homeTopVolumn = this.httpPath + 'client/top-volumn';
   static marketEvent = this.httpPath + 'client/market-event';
 
   // user

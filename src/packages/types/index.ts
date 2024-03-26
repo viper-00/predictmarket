@@ -216,3 +216,23 @@ export type HomeEventType = {
   totalOrderAmount: number;
   commentCount: number;
 };
+
+export type HomeTopVolumn = {
+  avatarUrl: string;
+  username: string;
+  cryptoAmount: string;
+  legalAmount: string;
+  contractAddress: string;
+};
+
+export type HomeRecentActivity = {
+  eventLogo: string;
+  title: string;
+  uniqueCode: string;
+  createdTime: number;
+  avatarUrl: string;
+  amount: number;
+  orderType: string;
+  playValue: string;
+  username: string;
+};
