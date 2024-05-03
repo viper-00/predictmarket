@@ -218,7 +218,7 @@ export class ETH {
 
   static async getAssetTransactions(address: string): Promise<TransactionDetail[]> {
     try {
-      const apiKey = 'YAlZobalfJSKjWMz3UvAFd9iRfvIuB6I';
+      const apiKey = '';
       const url = `https://eth-mainnet.g.alchemy.com/v2/${apiKey}`;
       const body = {
         id: 1,

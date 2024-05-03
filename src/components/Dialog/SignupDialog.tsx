@@ -20,9 +20,12 @@ import { DEFAULT_CHAIN_ID } from 'packages/constants';
 import { emailRegex } from 'packages/constants/regex';
 import { Http } from 'packages/core/http/http';
 import React, { useState } from 'react';
-import { MdPhone } from 'react-icons/md';
 import axios from 'packages/core/http/axios';
 import CustomButton from 'components/Button/CustomButton';
+import MetamaskSvg from 'assets/images/metamask.svg';
+import CoinbaseSvg from 'assets/images/coinbase.svg';
+import WalletconnectSvg from 'assets/images/walletconnect.svg';
+import Image from 'next/image';
 
 type Props = {
   isOpen: boolean;
@@ -125,26 +128,26 @@ const SignupDialog = (props: Props) => {
               OR
             </Text>
             <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-              <IconButton
+            <IconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
                 fontSize="20px"
-                icon={<MdPhone />}
+                icon={<Image src={MetamaskSvg} alt="metamask" width={30} height={30} />}
               />
               <IconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
                 fontSize="20px"
-                icon={<MdPhone />}
+                icon={<Image src={CoinbaseSvg} alt="coinbase" width={30} height={30} />}
               />
               <IconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
                 fontSize="20px"
-                icon={<MdPhone />}
+                icon={<Image src={WalletconnectSvg} alt="walletconnect" width={30} height={30} />}
               />
             </Grid>
             <Flex justifyContent={'center'} alignItems={'center'} py={5}>

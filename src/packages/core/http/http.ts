@@ -12,6 +12,7 @@ export class Http {
   static userLogin = this.httpPath + 'client/login';
   static userLoginByCode = this.httpPath + 'client/login-by-code';
   static userProfile = this.httpPath + 'client/user-profile';
+  static cryptoPrice = this.httpPath + 'client/crypto-price';
   static homeEventType = this.httpPath + 'client/market-event-type';
   static homeEvent = this.httpPath + 'client/market-event-list';
   static homeActivity = this.httpPath + 'client/recent-activity';
@@ -41,4 +42,7 @@ export class Http {
 
   // upload
   static fileUpload = this.httpPath + 'client/upload/uploadFile';
+
+  // coin
+  static freeCoin = this.httpPath + 'client/coin/free';
 }

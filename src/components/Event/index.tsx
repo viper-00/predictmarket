@@ -360,7 +360,7 @@ const Event = () => {
                 </Box>
               </Flex>
               <Flex>
-                <IconButton icon={<CiStar />} aria-label="collect" mr={2} />
+                <IconButton icon={<CiStar />} aria-label="collect" mr={2} isDisabled={userAddress === "" ? true : false} />
                 <IconButton
                   icon={<FaLink />}
                   aria-label="link"
@@ -488,6 +488,7 @@ const Event = () => {
                             handleClickPostComment();
                           }}
                           text={'Post'}
+                          isDisabled={userAddress === "" ? true : false}
                         />
                       </InputRightElement>
                     </InputGroup>
@@ -514,6 +515,7 @@ const Event = () => {
                             ownLikeStatus={item.ownLikeStatus}
                             commentId={item.commentId}
                             init={init}
+                            isDisabled={userAddress === "" ? true : false}
                           />
                         ))}
                     </Grid>
@@ -1083,10 +1085,11 @@ type EventCommentProps = {
   ownLikeStatus: number;
   commentId: number;
   init: () => void;
+  isDisabled: boolean;
 };
 
 const EventComment = (params: EventCommentProps) => {
-  const { avatarUrl, username, createTime, content, likeCount, ownLikeStatus, commentId, init } = params;
+  const { avatarUrl, username, createTime, content, likeCount, ownLikeStatus, commentId, init, isDisabled } = params;
 
   const toast = useToast();
 
@@ -1134,6 +1137,7 @@ const EventComment = (params: EventCommentProps) => {
             icon={ownLikeStatus == 1 ? <FcLike /> : <FcLikePlaceholder />}
             isRound={true}
             onClick={onClickLike}
+            isDisabled={isDisabled}
           />
           <Text color={'#828282'} ml={2} fontSize={14}>
             {likeCount}

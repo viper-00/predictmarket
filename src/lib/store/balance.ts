@@ -5,6 +5,7 @@ export type BalancePerisistState = {
   eth: string;
   usdt: string;
   usdc: string;
+  total: string;
 
   setEth: (eth: string) => void;
   getEth: () => string;
@@ -12,6 +13,8 @@ export type BalancePerisistState = {
   getUsdt: () => string;
   setUsdc: (usdc: string) => void;
   getUsdc: () => string;
+  setTotal: (total: string) => void;
+  getTotal: () => string;
 
   resetBalance: () => void;
 };
@@ -22,12 +25,15 @@ export const useBalancePerisistStore = create(
       eth: '',
       usdt: '',
       usdc: '',
+      total: '',
       setEth: (value) => set(() => ({ eth: value })),
       getEth: () => get().eth,
       setUsdt: (value) => set(() => ({ usdt: value })),
       getUsdt: () => get().usdt,
       setUsdc: (value) => set(() => ({ usdc: value })),
       getUsdc: () => get().usdc,
+      setTotal: (value) => set(() => ({ total: value })),
+      getTotal: () => get().total,
       resetBalance: () => {
         set((state) => {
           return {
@@ -35,6 +41,7 @@ export const useBalancePerisistStore = create(
             eth: '',
             usdt: '',
             usdc: '',
+            total: '',
           };
         });
       },
@@ -53,3 +60,5 @@ export const setUsdtBalance = (value: string) => useBalancePerisistStore.getStat
 export const getUsdtBalance = () => useBalancePerisistStore.getState().getUsdt();
 export const setUsdcBalance = (value: string) => useBalancePerisistStore.getState().setUsdc(value);
 export const getUsdcBalance = () => useBalancePerisistStore.getState().getUsdc();
+export const setTotalBalance = (value: string) => useBalancePerisistStore.getState().setTotal(value);
+export const getTotalBalance = () => useBalancePerisistStore.getState().getTotal();

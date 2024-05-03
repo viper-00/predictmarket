@@ -15,12 +15,10 @@ import {
   InputRightElement,
   Link,
   Text,
-  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
 import { Google } from '@web3uikit/icons';
 import React, { useState } from 'react';
-import { MdPhone } from 'react-icons/md';
 import { emailRegex } from 'packages/constants/regex';
 import { Http } from 'packages/core/http/http';
 import axios from 'packages/core/http/axios';
@@ -36,6 +34,10 @@ import {
   setUserBio,
 } from 'lib/store/user';
 import CustomButton from 'components/Button/CustomButton';
+import MetamaskSvg from 'assets/images/metamask.svg';
+import CoinbaseSvg from 'assets/images/coinbase.svg';
+import WalletconnectSvg from 'assets/images/walletconnect.svg';
+import Image from 'next/image';
 
 type Props = {
   isOpen: boolean;
@@ -230,7 +232,7 @@ const LoginDialog = (props: Props) => {
                 <CustomButton
                   size={'sm'}
                   onClick={async () => {
-                    onLogin()
+                    onLogin();
                   }}
                   text={'Get Code'}
                 />
@@ -243,7 +245,7 @@ const LoginDialog = (props: Props) => {
                 colorScheme="blue"
                 textAlign={'center'}
                 onClick={async () => {
-                  onLoginByCode()
+                  onLoginByCode();
                 }}
                 text={'Log in with email'}
               />
@@ -257,21 +259,21 @@ const LoginDialog = (props: Props) => {
                 colorScheme="teal"
                 aria-label="Call Sage"
                 fontSize="20px"
-                icon={<MdPhone />}
+                icon={<Image src={MetamaskSvg} alt="metamask" width={30} height={30} />}
               />
               <IconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
                 fontSize="20px"
-                icon={<MdPhone />}
+                icon={<Image src={CoinbaseSvg} alt="coinbase" width={30} height={30} />}
               />
               <IconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
                 fontSize="20px"
-                icon={<MdPhone />}
+                icon={<Image src={WalletconnectSvg} alt="walletconnect" width={30} height={30} />}
               />
             </Grid>
             <Flex justifyContent={'center'} alignItems={'center'} py={5}>

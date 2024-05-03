@@ -47,7 +47,7 @@ import DefaultAvatar from 'assets/images/default-avatar.svg';
 import LogoBlack from 'assets/images/logo_black.svg';
 import LogoWhite from 'assets/images/logo_white.svg';
 import Image from 'next/image';
-import { getUsdtBalance } from 'lib/store/balance';
+import { getTotalBalance } from 'lib/store/balance';
 import CustomButton from 'components/Button/CustomButton';
 
 const HomeNav = () => {
@@ -68,13 +68,13 @@ const HomeNav = () => {
   const [contractAddress, setContractAddress] = useState<string>('');
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [notification, setNotification] = useState<UserNotification[]>([]);
-  const [usdtBalance, setUsdtBalance] = useState<string>('0');
+  const [totalBalance, setTotalBalance] = useState<string>('0');
 
   useEffect(() => {
     setUsername(getUsername());
     setContractAddress(getUserContractAddress());
     setAvatarUrl(getUserAvatarUrl());
-    setUsdtBalance(getUsdtBalance());
+    setTotalBalance(getTotalBalance());
   }, []);
 
   useEffect(() => {
@@ -199,8 +199,8 @@ const HomeNav = () => {
                 <>
                   <Link href="/portfolio" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                     <Flex flexDirection={'column'} alignItems={'center'}>
-                      <Text fontSize={14} color={'#27ae60'}>
-                        0(U)
+                      <Text fontSize={14} color={'#27ae60'} fontWeight={'bold'}>
+                        $0
                       </Text>
                       <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                         Portfolio
@@ -209,8 +209,8 @@ const HomeNav = () => {
                   </Link>
                   <Link href="/wallet" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                     <Flex flexDirection={'column'} alignItems={'center'}>
-                      <Text fontSize={14} color={'#27ae60'}>
-                        {usdtBalance}(U)
+                      <Text fontSize={14} color={'#27ae60'} fontWeight={'bold'}>
+                        ${totalBalance}
                       </Text>
                       <Text fontSize={13} color={textColor} fontWeight={'bold'}>
                         Cash
@@ -386,7 +386,7 @@ const HomeNav = () => {
                         <Flex py={2}>
                           <Link href="/portfolio">
                             <Flex flexDirection={'column'}>
-                              <Text fontWeight={'bold'}>0(U)</Text>
+                              <Text fontWeight={'bold'} fontSize={20}>0(U)</Text>
                               <Flex alignItems={'center'}>
                                 <Text pr={1}>Portfolio</Text>
                                 <FaArrowRight />
@@ -395,7 +395,7 @@ const HomeNav = () => {
                           </Link>
                           <Link href="/wallet" ml={2}>
                             <Flex flexDirection={'column'} pl={2}>
-                              <Text fontWeight={'bold'}>{usdtBalance}(U)</Text>
+                              <Text fontWeight={'bold'} fontSize={20}>${totalBalance}</Text>
                               <Flex alignItems={'center'}>
                                 <Text pr={1}>Cash</Text>
                                 <FaArrowRight />

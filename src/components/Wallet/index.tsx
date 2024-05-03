@@ -38,7 +38,9 @@ import { IoChatboxEllipsesOutline } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
 import { getUserAuthorization, getUserContractAddress } from 'lib/store/user';
 import USDT from '../../assets/coin/usdt.png';
+import ETH from '../../assets/coin/eth.png';
 import USDC from '../../assets/coin/usdc.png';
+import OP from '../../assets/coin/op.png';
 import Image from 'next/image';
 import { LuRefreshCw } from 'react-icons/lu';
 import { IoMdMore } from 'react-icons/io';
@@ -46,13 +48,19 @@ import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { UserCoinBalance } from 'packages/types';
 import { OP_SCAN_LINK } from 'packages/constants';
-import { getEthBalance, getUsdcBalance, getUsdtBalance } from 'lib/store/balance';
+import { getEthBalance, getTotalBalance, getUsdcBalance, getUsdtBalance } from 'lib/store/balance';
 import CustomButton from 'components/Button/CustomButton';
+import { IS_MAINNET } from 'packages/constants';
+import CustomIconButton from 'components/Button/CustomIconButton';
+import { addition, multiply } from 'utils/number';
+import { getEthPrice, getUsdcPrice, getUsdtPrice } from 'lib/store/price';
 
 const Wallet = () => {
   const [contractAddress, setContractAddress] = useState<string>('');
   const [ethBalance, setEthBalance] = useState<string>('0');
   const [usdtBalance, setUsdtBalance] = useState<string>('0');
+  const [usdcBalance, setUsdcBalance] = useState<string>('0');
+  const [totalBalance, setTotalBalance] = useState<string>('0');
 
   const toast = useToast();
 
@@ -60,7 +68,118 @@ const Wallet = () => {
     setContractAddress(getUserContractAddress());
     setEthBalance(getEthBalance());
     setUsdtBalance(getUsdtBalance());
+    setUsdcBalance(getUsdcBalance());
+    setTotalBalance(getTotalBalance());
   }, []);
+
+  const onClickRefreshBalance = async () => {
+    try {
+      const response: any = await axios.get(Http.userBalance);
+      if (response.code === 10200 && response.result) {
+        setEthBalance(response.data.eth);
+        setUsdtBalance(response.data.usdt);
+        setUsdcBalance(response.data.usdc);
+        const total = addition(
+          addition(multiply(response.data.eth, getEthPrice().usd), multiply(response.data.usdt, getUsdtPrice().usd)),
+          multiply(response.data.usdc, getUsdcPrice().usd),
+        );
+        setTotalBalance(total.toFixed(2));
+
+        toast({
+          position: 'top',
+          title: 'update completed',
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
+    }
+  };
+
+  const onClickGetCoinForEth = async () => {
+    try {
+      const response: any = await axios.get(Http.freeCoin, {
+        params: {
+          coin: 'ETH',
+        },
+      });
+      if (response.code === 10200 && response.result) {
+        toast({
+          position: 'top',
+          title: 'Successfully obtain test coin',
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
+    }
+  };
+
+  const onClickGetCoinForUsdt = async () => {
+    try {
+      const response: any = await axios.get(Http.freeCoin, {
+        params: {
+          coin: 'USDT',
+        },
+      });
+      if (response.code === 10200 && response.result) {
+        toast({
+          position: 'top',
+          title: 'Successfully obtain test coin',
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
+    }
+  };
+
+  const onClickGetCoinForUsdc = async () => {
+    try {
+      const response: any = await axios.get(Http.freeCoin, {
+        params: {
+          coin: 'USDC',
+        },
+      });
+      if (response.code === 10200 && response.result) {
+        toast({
+          position: 'top',
+          title: 'Successfully obtain test coin',
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
@@ -80,6 +199,9 @@ const Wallet = () => {
               </Flex>
               <Flex mt={5} alignItems={'center'}>
                 <Text fontWeight={'bold'}>Deposit USDC/USDT(Optimism)</Text>
+                <Circle size={10} color="white" ml={2} borderWidth={1}>
+                  <Image alt="coin" src={ETH} width={30} height={30} />
+                </Circle>
                 <Circle size={10} color="white" ml={2} borderWidth={1}>
                   <Image alt="coin" src={USDC} width={30} height={30} />
                 </Circle>
@@ -163,9 +285,9 @@ const Wallet = () => {
                   <Text fontWeight={'bold'} fontSize={16}>
                     No crypto?
                   </Text>
-                  <Button colorScheme="blue" borderRadius={30} ml={3} size={'sm'}>
-                    Buy USDC/USDT
-                  </Button>
+                  <Box ml={2}>
+                    <CustomButton colorScheme="blue" size={'sm'} text={'Buy USDC/USDT'} />
+                  </Box>
                 </Flex>
                 <Flex>
                   <Box mr={5}>
@@ -184,37 +306,73 @@ const Wallet = () => {
               </Flex>
             </Box>
             <Grid templateColumns="repeat(4, 1fr)" gap={4} mt={5}>
-              <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={10} color="white" ml={2} borderWidth={1}>
-                  <Image alt="coin" src={USDC} width={30} height={30} />
-                </Circle>
-                <Text mt={2} fontWeight={'bold'}>
-                  USDC(OP)
-                </Text>
+              <Flex direction={'column'}>
+                <Flex borderRadius={10} borderWidth={1} p={5} alignItems={'center'} direction={'column'} mb={5}>
+                  <Circle size={10} color="white" ml={2} borderWidth={1}>
+                    <Image alt="coin" src={ETH} width={30} height={30} />
+                  </Circle>
+                  <Text mt={2} fontWeight={'bold'}>
+                    ETH
+                  </Text>
+                </Flex>
+                {contractAddress !== '' && !IS_MAINNET && (
+                  <CustomButton
+                    colorScheme={'teal'}
+                    variant={'outline'}
+                    text={'Get the coin'}
+                    textAlign={'center'}
+                    onClick={onClickGetCoinForEth}
+                  />
+                )}
               </Flex>
-              <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={10} color="white" ml={2} borderWidth={1}>
-                  <Image alt="coin" src={USDT} width={30} height={30} />
-                </Circle>
-                <Text mt={2} fontWeight={'bold'}>
-                  USDT(OP)
-                </Text>
+              <Flex direction={'column'}>
+                <Flex borderRadius={10} borderWidth={1} p={5} alignItems={'center'} direction={'column'} mb={5}>
+                  <Circle size={10} color="white" ml={2} borderWidth={1}>
+                    <Image alt="coin" src={USDT} width={30} height={30} />
+                  </Circle>
+                  <Text mt={2} fontWeight={'bold'}>
+                    USDT(OP)
+                  </Text>
+                </Flex>
+                {contractAddress !== '' && !IS_MAINNET && (
+                  <CustomButton
+                    colorScheme={'teal'}
+                    variant={'outline'}
+                    text={'Get the coin'}
+                    textAlign={'center'}
+                    onClick={onClickGetCoinForUsdt}
+                  />
+                )}
               </Flex>
-              <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={10} color="white" ml={2} borderWidth={1}>
-                  <Image alt="coin" src={USDT} width={30} height={30} />
-                </Circle>
-                <Text mt={2} fontWeight={'bold'}>
-                  Other
-                </Text>
+              <Flex direction={'column'}>
+                <Flex borderRadius={10} borderWidth={1} p={5} alignItems={'center'} direction={'column'} mb={5}>
+                  <Circle size={10} color="white" ml={2} borderWidth={1}>
+                    <Image alt="coin" src={USDC} width={30} height={30} />
+                  </Circle>
+                  <Text mt={2} fontWeight={'bold'}>
+                    USDC(OP)
+                  </Text>
+                </Flex>
+                {contractAddress !== '' && !IS_MAINNET && (
+                  <CustomButton
+                    colorScheme={'teal'}
+                    variant={'outline'}
+                    text={'Get the coin'}
+                    textAlign={'center'}
+                    onClick={onClickGetCoinForUsdc}
+                  />
+                )}
               </Flex>
-              <Flex borderRadius={10} borderWidth={1} alignItems={'center'} direction={'column'} p={5}>
-                <Circle size={10} color="white" ml={2} borderWidth={1}>
-                  <Image alt="coin" src={USDT} width={30} height={30} />
-                </Circle>
-                <Text mt={2} fontWeight={'bold'}>
-                  P2P
-                </Text>
+
+              <Flex direction={'column'}>
+                <Flex borderRadius={10} borderWidth={1} p={5} alignItems={'center'} direction={'column'} mb={5}>
+                  <Circle size={10} color="white" ml={2} borderWidth={1}>
+                    <Image alt="coin" src={OP} width={30} height={30} />
+                  </Circle>
+                  <Text mt={2} fontWeight={'bold'}>
+                    Other
+                  </Text>
+                </Flex>
               </Flex>
             </Grid>
           </GridItem>
@@ -223,17 +381,19 @@ const Wallet = () => {
               <Text fontSize={12}>BALANCE</Text>
               <Flex mt={1} justifyContent={'space-between'}>
                 <Text fontWeight={'bold'} fontSize={30}>
-                  $0.00
+                  ${totalBalance}
                 </Text>
                 <Flex>
-                  <IconButton
-                    aria-label="refresh wallet"
-                    icon={<LuRefreshCw />}
-                    mr={2}
-                    borderRadius={50}
-                    variant="outline"
-                    onClick={() => {}}
-                  />
+                  <Box mr={2}>
+                    <CustomIconButton
+                      colorScheme={'teal'}
+                      variant={'outline'}
+                      icon={<LuRefreshCw />}
+                      textAlign={'center'}
+                      borderRadius={50}
+                      onClick={onClickRefreshBalance}
+                    />
+                  </Box>
                   <Menu>
                     <MenuButton
                       as={IconButton}
@@ -265,9 +425,9 @@ const Wallet = () => {
                   <Text fontWeight={'bold'} fontSize={20}>
                     (USDT)
                   </Text>
-                  {/* <Text fontWeight={'bold'} fontSize={20}>
+                  <Text fontWeight={'bold'} fontSize={20}>
                     (USDC)
-                  </Text> */}
+                  </Text>
                 </Box>
                 <Box ml={2}>
                   <Text fontWeight={'bold'} fontSize={20}>
@@ -276,15 +436,15 @@ const Wallet = () => {
                   <Text fontWeight={'bold'} fontSize={20}>
                     {usdtBalance}
                   </Text>
-                  {/* <Text fontWeight={'bold'} fontSize={20}>
-                    {getUsdcBalance()}
-                  </Text> */}
+                  <Text fontWeight={'bold'} fontSize={20}>
+                    {usdcBalance}
+                  </Text>
                 </Box>
               </Flex>
             </Box>
             <Box mt={5}>
               <CustomButton
-                text="Chat with a human"
+                text={'Chat with a human'}
                 width={'100%'}
                 leftIcon={<IoChatboxEllipsesOutline />}
                 colorScheme="teal"
