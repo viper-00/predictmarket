@@ -17,13 +17,16 @@ import {
   Link,
   useColorMode,
 } from '@chakra-ui/react';
-import { FaInstagram, FaTwitch, FaTwitter, FaYoutube } from 'react-icons/fa';
-import { FiHome } from 'react-icons/fi';
-import { MdCall } from 'react-icons/md';
+import { FaTelegramPlane, FaYoutube } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
+import { GiSevenPointedStar } from 'react-icons/gi';
 import { ReactNode } from 'react';
 import LogoBlack from 'assets/images/logo_black.svg';
 import LogoWhite from 'assets/images/logo_white.svg';
 import Image from 'next/image';
+import CustomButton from 'components/Button/CustomButton';
+import OpSvg from 'assets/images/op.svg';
+import MetamaskSvg from 'assets/images/metamask.svg';
 
 const HomeFooter = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -39,28 +42,39 @@ const HomeFooter = () => {
             <Link href="/">
               {colorMode === 'light' ? (
                 <>
-                  <Image src={LogoWhite} alt="logo" />
+                  <Image src={LogoWhite} alt="logo" width={200} />
                 </>
               ) : (
                 <>
-                  <Image src={LogoWhite} alt="logo" />
+                  <Image src={LogoWhite} alt="logo" width={200} />
                 </>
               )}
             </Link>
             <Text fontSize={'md'}>The worlds largest decentralized prediction market.</Text>
             <Flex>
-              <Button rightIcon={<MdCall />} colorScheme="gray">
-                <Text>POWERED BY</Text>
-              </Button>
-              <Button leftIcon={<MdCall />} colorScheme="gray" ml={4}>
-                <Text>ALL SYSTEMS OPERATIONAL</Text>
-              </Button>
+              <CustomButton
+                rightIcon={<Image src={OpSvg} alt="op" width={25} height={25} />}
+                colorScheme="gray"
+                text={'POWERED BY'}
+                size={'sm'}
+                onClick={async () => {
+                  window.location.href = 'https://www.optimism.io/';
+                }}
+              />
+              <Box ml={2}>
+                <CustomButton
+                  leftIcon={<GiSevenPointedStar color="green" />}
+                  colorScheme="gray"
+                  text={'ALL SYSTEMS OPERATIONAL'}
+                  size={'sm'}
+                />
+              </Box>
             </Flex>
           </Stack>
           <Flex>
             <Stack align={'flex-start'}>
               <Text fontSize={'lg'}>Marketplace</Text>
-              <Box as="a" href={'#'}>
+              <Box as="a" href={'mailto:nowcoin369@gmail.com'}>
                 <Text>Contract</Text>
               </Box>
               <Box as="a" href={'/learn'}>
@@ -77,14 +91,14 @@ const HomeFooter = () => {
               <Text fontSize={'lg'}>Join the community</Text>
               <Flex>
                 <Stack direction={'row'} spacing={6}>
-                  <SocialButton label={'Twitter'} href={'#'}>
-                    <FaTwitter />
+                  <SocialButton label={'Telegram'} href={'#'}>
+                    <FaTelegramPlane />
+                  </SocialButton>
+                  <SocialButton label={'X'} href={'#'}>
+                    <FaXTwitter />
                   </SocialButton>
                   <SocialButton label={'YouTube'} href={'#'}>
                     <FaYoutube />
-                  </SocialButton>
-                  <SocialButton label={'Instagram'} href={'#'}>
-                    <FaInstagram />
                   </SocialButton>
                 </Stack>
               </Flex>

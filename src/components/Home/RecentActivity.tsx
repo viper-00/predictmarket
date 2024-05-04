@@ -20,6 +20,8 @@ import { HomeRecentActivity, HomeTopVolumn } from 'packages/types';
 import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { formatTimestamp } from 'utils/format';
+import { addition, ConvertTargetCryptoToFiatBalance, multiply } from 'utils/number';
+import { getEthPrice, getUsdcPrice, getUsdtPrice } from 'lib/store/price';
 
 const RecentActivity = () => {
   const [activity, setActivity] = useState<HomeRecentActivity[]>([]);
@@ -44,7 +46,8 @@ const RecentActivity = () => {
               amount: element.amount,
               orderType: element.order_type,
               username: element.username,
-              playValue: element.play_value
+              playValue: element.play_value,
+              usdAmount: ConvertTargetCryptoToFiatBalance(element.coin, element.amount),
             };
             activitys.push(a);
           }
@@ -70,12 +73,19 @@ const RecentActivity = () => {
         if (volumnResult) {
           var volumns: HomeTopVolumn[] = [];
           for (const element of volumnResult) {
+            const totalUsdBalance = addition(
+              addition(
+                multiply(element.eth_balance, getEthPrice().usd),
+                multiply(element.usdt_balance, getUsdtPrice().usd),
+              ),
+              multiply(element.usdc_balance, getUsdcPrice().usd),
+            );
+
             let v: HomeTopVolumn = {
               avatarUrl: element.avatar_url,
               username: element.username,
-              cryptoAmount: element.crypto_amount,
-              legalAmount: element.legal_amount,
               contractAddress: element.user_address,
+              totalUsdAmount: parseFloat(totalUsdBalance.toFixed(2)),
             };
             volumns.push(v);
           }
@@ -125,6 +135,7 @@ const RecentActivity = () => {
                 orderType={item.orderType}
                 username={item.username}
                 playValue={item.playValue}
+                usdAmount={item.usdAmount}
               />
             ))}
         </Box>
@@ -145,8 +156,7 @@ const RecentActivity = () => {
                 key={index}
                 username={item.username}
                 avatarUrl={item.avatarUrl}
-                cryptoAmount={item.cryptoAmount}
-                legalAmount={item.legalAmount}
+                totalUsdAmount={item.totalUsdAmount}
                 contractAddress={item.contractAddress}
               />
             ))}
@@ -159,7 +169,8 @@ const RecentActivity = () => {
 export default RecentActivity;
 
 const RecentActivityLink = (params: HomeRecentActivity) => {
-  const { eventLogo, title, uniqueCode, createdTime, avatarUrl, amount, orderType, username, playValue } = params;
+  const { eventLogo, title, uniqueCode, createdTime, avatarUrl, amount, orderType, username, playValue, usdAmount } =
+    params;
   const [currentOrigin, setCurrentOrigin] = useState<string>('');
 
   const bgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
@@ -175,8 +186,8 @@ const RecentActivityLink = (params: HomeRecentActivity) => {
   }, []);
 
   return (
-    <Card p={3} _hover={{ backgroundColor: bgColor }}>
-      <Link href={currentOrigin + "/event/" + uniqueCode} style={{ textDecoration: 'none' }}>
+    <Card p={3} _hover={{ backgroundColor: bgColor }} mb={1} boxShadow={'none'}>
+      <Link href={currentOrigin + '/event/' + uniqueCode} style={{ textDecoration: 'none' }}>
         <Flex alignItems={'center'} justifyContent={'space-between'} mt={2}>
           <Flex alignItems={'center'}>
             <Avatar src={eventLogo ? eventLogo : DefaultAvatar} />
@@ -193,9 +204,8 @@ const RecentActivityLink = (params: HomeRecentActivity) => {
                 </Text>
                 <Text pl={1}>at</Text>
                 <Text pl={1} fontWeight={'bold'}>
-                  {amount}
+                  ${usdAmount}
                 </Text>
-                <Text pl={1}>(USDT)</Text>
               </Flex>
             </Box>
           </Flex>
@@ -207,7 +217,7 @@ const RecentActivityLink = (params: HomeRecentActivity) => {
 };
 
 const TopVolumnLink = (params: HomeTopVolumn) => {
-  const { avatarUrl, username, cryptoAmount, legalAmount, contractAddress } = params;
+  const { avatarUrl, username, totalUsdAmount, contractAddress } = params;
 
   const bgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
   const [currentOrigin, setCurrentOrigin] = useState<string>('');
@@ -223,15 +233,13 @@ const TopVolumnLink = (params: HomeTopVolumn) => {
   }, []);
 
   return (
-    <Card p={3} _hover={{ backgroundColor: bgColor }}>
+    <Card p={3} _hover={{ backgroundColor: bgColor }} boxShadow={'none'} mb={1}>
       <Link href={currentOrigin + '/profile/' + contractAddress} style={{ textDecoration: 'none' }}>
         <Flex alignItems={'center'}>
           <Avatar src={avatarUrl ? avatarUrl : DefaultAvatar} />
           <Box pl={4}>
             <Text fontWeight={'bold'}>{username}</Text>
-            <Text fontSize={14}>
-              {cryptoAmount}(U) ${legalAmount}
-            </Text>
+            <Text fontSize={14}>${totalUsdAmount}</Text>
           </Box>
         </Flex>
       </Link>

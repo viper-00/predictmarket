@@ -327,7 +327,7 @@ const Form2 = () => {
             <CustomButton
               size="sm"
               onClick={async () => {
-                handleClickPassword;
+                handleClickPassword()
               }}
               text={showPassword ? 'Hide' : 'Show'}
             />
@@ -351,7 +351,7 @@ const Form2 = () => {
             <CustomButton
               size="sm"
               onClick={async () => {
-                handleClickConfirmPassword;
+                handleClickConfirmPassword()
               }}
               text={showConfirmPassword ? 'Hide' : 'Show'}
             />
@@ -402,7 +402,7 @@ const Post = () => {
 
   const onClickPostEvent = async () => {
     try {
-      const response: any = await axios.post(Http.marketEvent, {
+      const response: any = await axios.post(Http.marketEventEvent, {
         title: getEventTitle(),
         expire_time: new Date(getEventExpireTime()).getTime(),
         type: getEventType(),

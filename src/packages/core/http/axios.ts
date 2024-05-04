@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { getUserAuthorization, resetUser } from 'lib/store/user';
+import { resetEverything } from 'lib/store';
+import { getUserAuthorization } from 'lib/store/user';
 
 const baseHeader = {
   'Content-Type': 'application/json; charset=utf-8',
@@ -42,7 +43,7 @@ axios.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      resetUser();
+      resetEverything();
       window.location.href = '/';
     } else {
       return Promise.reject(error);

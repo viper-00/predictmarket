@@ -30,6 +30,7 @@ import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { UserProfile, EventType, EventOrder, EventComment, EventOrderType, EventOrderStringType } from 'packages/types';
 import CustomButton from 'components/Button/CustomButton';
+import { ConvertTargetCryptoToFiatBalance } from 'utils/number';
 
 const Profile = () => {
   const {
@@ -41,6 +42,7 @@ const Profile = () => {
   const [events, setEvents] = useState<EventType[]>([]);
   const [orders, setOrders] = useState<EventOrder[]>([]);
   const [comments, setComments] = useState<EventComment[]>([]);
+  const [contractAddress, setContractAddress] = useState<string>('');
 
   const contractBgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
 
@@ -106,6 +108,8 @@ const Profile = () => {
                 username: element.username,
                 createdTime: element.created_time,
                 hash: element.hash,
+                coin: element.coin,
+                usdAmount: ConvertTargetCryptoToFiatBalance(element.coin, element.amount)
               };
 
               orders.push(order);
@@ -127,6 +131,8 @@ const Profile = () => {
     if (id && id !== '') {
       init();
     }
+
+    setContractAddress(getUserContractAddress());
   }, [id]);
 
   return (
@@ -171,13 +177,15 @@ const Profile = () => {
                 </Flex>
               </Box>
             </Flex>
-            <CustomButton
-              variant="outline"
-              onClick={async () => {
-                window.location.href = '/settings';
-              }}
-              text={'Edit Profile'}
-            />
+            {contractAddress && id && contractAddress === id && (
+              <CustomButton
+                variant="outline"
+                onClick={async () => {
+                  window.location.href = '/settings';
+                }}
+                text={'Edit Profile'}
+              />
+            )}
           </Flex>
         </Box>
 
@@ -188,7 +196,7 @@ const Profile = () => {
             </Circle>
             <Text mt={2}>Profit/loss</Text>
             <Text fontWeight={'bold'} fontSize={20}>
-              (0) USDT
+              $0
             </Text>
           </Box>
           <Box borderWidth={1} padding={3} borderRadius={10}>
@@ -243,7 +251,7 @@ const Profile = () => {
                         px={1}
                         py={3}
                         _hover={{
-                          backgroundColor: '#f2f2f2',
+                          backgroundColor: useColorModeValue('#f2f2f2', '#2c3f4f'),
                         }}
                         borderBottomWidth={1}
                       >
@@ -287,7 +295,7 @@ const Profile = () => {
                         px={1}
                         py={3}
                         _hover={{
-                          backgroundColor: '#f2f2f2',
+                          backgroundColor: useColorModeValue('#f2f2f2', '#2c3f4f'),
                         }}
                         borderBottomWidth={1}
                       >
@@ -308,7 +316,7 @@ const Profile = () => {
                           </Text>
                         </Flex>
                         <Text fontSize={16} mt={2}>
-                          Amount: {item.amount} USDT
+                          Amount: ${item?.usdAmount}
                         </Text>
                         {item?.orderType === EventOrderStringType.buy && (
                           <Text fontSize={16} mt={1}>

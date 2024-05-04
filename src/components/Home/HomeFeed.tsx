@@ -4,6 +4,7 @@ import axios from 'packages/core/http/axios';
 import { useEffect, useState } from 'react';
 import FeedCard from './Feed/FeedCard';
 import { HomeEventType } from 'packages/types';
+import { ConvertTargetCryptoToFiatBalance, multiply } from 'utils/number';
 
 const HomeFeed = () => {
   const [eventType, setEventType] = useState<string[]>([]);
@@ -32,6 +33,7 @@ const HomeFeed = () => {
               settlementTime: element.settlement_time,
               totalOrderAmount: element.total_order_amount,
               commentCount: element.comment_count,
+              totalUsdAmount: ConvertTargetCryptoToFiatBalance(element.coin, element.total_order_amount)
             };
             e.push(t);
           }
@@ -106,6 +108,7 @@ const HomeFeed = () => {
                 settlementTime={item.settlementTime}
                 totalOrderAmount={item.totalOrderAmount}
                 commentCount={item.commentCount}
+                totalUsdAmount={item.totalUsdAmount}
               />
             ))}
 

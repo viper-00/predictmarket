@@ -31,10 +31,11 @@ type homeEvent = {
   settlementTime: number;
   totalOrderAmount: number;
   commentCount: number;
+  totalUsdAmount: number;
 };
 
 const FeedCard = (params: homeEvent) => {
-  const { eventLogo, title, uniqueCode, settlementTime, totalOrderAmount, commentCount } = params;
+  const { eventLogo, title, uniqueCode, settlementTime, totalOrderAmount, commentCount, totalUsdAmount } = params;
   const bgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
 
   const [currentOrigin, setCurrentOrigin] = useState<string>('');
@@ -64,13 +65,13 @@ const FeedCard = (params: homeEvent) => {
       <Flex alignItems={'center'} justifyContent={'space-between'} mt={5}>
         <Flex alignItems={'center'}>
           <FaFirstOrderAlt size={20} />
-          {totalOrderAmount > 0 ? (
+          {totalUsdAmount > 0 ? (
             <>
-              <Text ml={2}>{totalOrderAmount}  (USDT)</Text>
+              <Text ml={2}>${totalUsdAmount}</Text>
             </>
           ) : (
             <>
-              <Text ml={2}>0 (USDT)</Text>
+              <Text ml={2}>$0</Text>
             </>
           )}
         </Flex>

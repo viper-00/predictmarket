@@ -22,10 +22,10 @@ export type BalancePerisistState = {
 export const useBalancePerisistStore = create(
   persist<BalancePerisistState>(
     (set, get) => ({
-      eth: '',
-      usdt: '',
-      usdc: '',
-      total: '',
+      eth: '0',
+      usdt: '0',
+      usdc: '0',
+      total: '0',
       setEth: (value) => set(() => ({ eth: value })),
       getEth: () => get().eth,
       setUsdt: (value) => set(() => ({ usdt: value })),
@@ -38,10 +38,10 @@ export const useBalancePerisistStore = create(
         set((state) => {
           return {
             ...state,
-            eth: '',
-            usdt: '',
-            usdc: '',
-            total: '',
+            eth: '0',
+            usdt: '0',
+            usdc: '0',
+            total: '0',
           };
         });
       },
@@ -62,3 +62,4 @@ export const setUsdcBalance = (value: string) => useBalancePerisistStore.getStat
 export const getUsdcBalance = () => useBalancePerisistStore.getState().getUsdc();
 export const setTotalBalance = (value: string) => useBalancePerisistStore.getState().setTotal(value);
 export const getTotalBalance = () => useBalancePerisistStore.getState().getTotal();
+export const resetBalance = () => useBalancePerisistStore.getState().resetBalance();

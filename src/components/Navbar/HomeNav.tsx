@@ -38,6 +38,7 @@ import SignupDialog from 'components/Dialog/SignupDialog';
 import { IoMdBasketball } from 'react-icons/io';
 import { FiActivity } from 'react-icons/fi';
 import { AiOutlineTrophy } from 'react-icons/ai';
+import { RiGameLine } from "react-icons/ri";
 import { getUserAuthorization, getUserContractAddress, getUsername, resetUser, getUserAvatarUrl } from 'lib/store/user';
 import { formatEllipsisTxt, formatTimestamp } from 'utils/format';
 import { Http } from 'packages/core/http/http';
@@ -142,15 +143,15 @@ const HomeNav = () => {
             <Link href="/">
               {colorMode === 'light' ? (
                 <>
-                  <Image src={LogoBlack} alt="logo" />
+                  <Image src={LogoBlack} alt="logo" width={200} />
                 </>
               ) : (
                 <>
-                  <Image src={LogoWhite} alt="logo" />
+                  <Image src={LogoWhite} alt="logo" width={200} />
                 </>
               )}
             </Link>
-            <InputGroup backgroundColor={useColorModeValue('white', 'gray.900')} ml={5}>
+            <InputGroup backgroundColor={useColorModeValue('white', 'gray.900')} ml={5} display={'none'}>
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color={useColorModeValue('black', 'white')} />
               </InputLeftElement>
@@ -170,6 +171,14 @@ const HomeNav = () => {
         <GridItem colSpan={1}>
           <Flex height={'100%'} justifyContent="right">
             <Flex borderRightWidth={isLogin ? 1 : 0} px={2} height="100%">
+              <Link href="/plays" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
+                <Flex flexDirection={'column'} alignItems={'center'}>
+                  <RiGameLine size={20} />
+                  <Text fontSize={13} color={textColor} fontWeight={'bold'}>
+                    Plays
+                  </Text>
+                </Flex>
+              </Link>
               <Link href="/markets" _hover={{ backgroundColor: bgColor }} borderRadius={10} px={3}>
                 <Flex flexDirection={'column'} alignItems={'center'}>
                   <IoMdBasketball size={20} />
@@ -260,7 +269,7 @@ const HomeNav = () => {
                           Notifications
                         </Text>
                         {notification.length > 0 ? (
-                          <Box pb={4}>
+                          <Box pb={4} mt={2}>
                             {notification &&
                               notification.map((item, index) => (
                                 <Link href="#" key={index} style={{ textDecoration: 'none' }}>
@@ -386,7 +395,9 @@ const HomeNav = () => {
                         <Flex py={2}>
                           <Link href="/portfolio">
                             <Flex flexDirection={'column'}>
-                              <Text fontWeight={'bold'} fontSize={20}>0(U)</Text>
+                              <Text fontWeight={'bold'} fontSize={20}>
+                                $0
+                              </Text>
                               <Flex alignItems={'center'}>
                                 <Text pr={1}>Portfolio</Text>
                                 <FaArrowRight />
@@ -395,7 +406,9 @@ const HomeNav = () => {
                           </Link>
                           <Link href="/wallet" ml={2}>
                             <Flex flexDirection={'column'} pl={2}>
-                              <Text fontWeight={'bold'} fontSize={20}>${totalBalance}</Text>
+                              <Text fontWeight={'bold'} fontSize={20}>
+                                ${totalBalance}
+                              </Text>
                               <Flex alignItems={'center'}>
                                 <Text pr={1}>Cash</Text>
                                 <FaArrowRight />

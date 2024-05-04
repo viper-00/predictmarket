@@ -184,3 +184,4 @@ export const setUsdcPrice = (priceData: {
   lastUpdatedAt: number;
 }) => usePricePerisistStore.getState().setUsdcCryptoPrice(priceData);
 export const getUsdcPrice = () => usePricePerisistStore.getState().getUsdcCryptoPrice();
+export const resetPrice = () => usePricePerisistStore.getState().resetPrice();

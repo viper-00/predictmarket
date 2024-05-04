@@ -178,6 +178,8 @@ export type EventOrder = {
   username: string;
   createdTime: number;
   hash: string;
+  coin: string;
+  usdAmount: number;
 };
 
 export type EventComment = {
@@ -215,14 +217,14 @@ export type HomeEventType = {
   settlementTime: number;
   totalOrderAmount: number;
   commentCount: number;
+  totalUsdAmount: number;
 };
 
 export type HomeTopVolumn = {
   avatarUrl: string;
   username: string;
-  cryptoAmount: string;
-  legalAmount: string;
   contractAddress: string;
+  totalUsdAmount: number;
 };
 
 export type HomeRecentActivity = {
@@ -235,4 +237,5 @@ export type HomeRecentActivity = {
   orderType: string;
   playValue: string;
   username: string;
+  usdAmount: number;
 };

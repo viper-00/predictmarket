@@ -112,6 +112,7 @@ const SignupDialog = (props: Props) => {
               variant="outline"
               width={'100%'}
               text={'Continue with Google'}
+              isDisabled={true}
             />
             <Input placeholder="Enter email" mt={5} value={email} onChange={handleEmailChange} />
             <Box mt={4}>
@@ -120,7 +121,7 @@ const SignupDialog = (props: Props) => {
                 width={'100%'}
                 text={'Sign up with email'}
                 onClick={async () => {
-                  onRegister()
+                  onRegister();
                 }}
               />
             </Box>
@@ -128,7 +129,7 @@ const SignupDialog = (props: Props) => {
               OR
             </Text>
             <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-            <IconButton
+              <IconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
@@ -141,6 +142,7 @@ const SignupDialog = (props: Props) => {
                 aria-label="Call Sage"
                 fontSize="20px"
                 icon={<Image src={CoinbaseSvg} alt="coinbase" width={30} height={30} />}
+                isDisabled={true}
               />
               <IconButton
                 variant="outline"
@@ -148,14 +150,15 @@ const SignupDialog = (props: Props) => {
                 aria-label="Call Sage"
                 fontSize="20px"
                 icon={<Image src={WalletconnectSvg} alt="walletconnect" width={30} height={30} />}
+                isDisabled={true}
               />
             </Grid>
             <Flex justifyContent={'center'} alignItems={'center'} py={5}>
-              <Link href="#">
+              <Link href="/privacy">
                 <Text>Privacy</Text>
               </Link>
               <Text px={1}>-</Text>
-              <Link href="#">
+              <Link href="/tos">
                 <Text>Terms</Text>
               </Link>
             </Flex>

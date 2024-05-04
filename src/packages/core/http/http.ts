@@ -29,6 +29,8 @@ export class Http {
   // event
   static marketEventPlay = this.httpPath + 'client/event/market-event-play';
   static marketEventType = this.httpPath + 'client/event/market-event-type';
+  static marketEventEvent = this.httpPath + 'client/event/market-event';
+
 
   // order
   static marketEventOrder = this.httpPath + 'client/event/order/market-event-order';

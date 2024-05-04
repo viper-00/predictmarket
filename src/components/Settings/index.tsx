@@ -170,10 +170,10 @@ const Settings = () => {
         <Box mt={10}>
           <Tabs variant="unstyled" orientation="vertical">
             <TabList>
-              <Tab _selected={{ color: '#000', bg: '#f2f2f2' }} borderRadius={10} width={150}>
+              <Tab _selected={{ bg: useColorModeValue('#f2f2f2', '#2c3f4f') }} borderRadius={10} width={150}>
                 Profile
               </Tab>
-              <Tab _selected={{ color: '#000', bg: '#f2f2f2' }} borderRadius={10} width={150}>
+              <Tab _selected={{ bg: useColorModeValue('#f2f2f2', '#2c3f4f') }} borderRadius={10} width={150}>
                 Notifications
               </Tab>
             </TabList>
@@ -233,7 +233,7 @@ const Settings = () => {
                     colorScheme="messenger"
                     size="lg"
                     onClick={async () => {
-                      onSaveChanges()
+                      onSaveChanges();
                     }}
                   />
                 </Box>

@@ -225,6 +225,7 @@ const LoginDialog = (props: Props) => {
               text={'Continue with Google'}
               textAlign={'center'}
               width={'100%'}
+              isDisabled={true}
             ></CustomButton>
             <InputGroup mt={5}>
               <Input pr="4.5rem" placeholder="Enter email" value={email} onChange={handleEmailChange} />
@@ -267,6 +268,7 @@ const LoginDialog = (props: Props) => {
                 aria-label="Call Sage"
                 fontSize="20px"
                 icon={<Image src={CoinbaseSvg} alt="coinbase" width={30} height={30} />}
+                isDisabled={true}
               />
               <IconButton
                 variant="outline"
@@ -274,14 +276,15 @@ const LoginDialog = (props: Props) => {
                 aria-label="Call Sage"
                 fontSize="20px"
                 icon={<Image src={WalletconnectSvg} alt="walletconnect" width={30} height={30} />}
+                isDisabled={true}
               />
             </Grid>
             <Flex justifyContent={'center'} alignItems={'center'} py={5}>
-              <Link href="#">
+              <Link href="/privacy">
                 <Text>Privacy</Text>
               </Link>
               <Text px={1}>-</Text>
-              <Link href="#">
+              <Link href="/tos">
                 <Text>Terms</Text>
               </Link>
             </Flex>

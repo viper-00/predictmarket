@@ -199,6 +199,8 @@ const Event = () => {
                   username: orderElement.username,
                   createdTime: orderElement.created_time,
                   hash: orderElement.hash,
+                  coin: '',
+                  usdAmount: 0,
                 };
 
                 orders.push(order);
@@ -349,7 +351,7 @@ const Event = () => {
                 <Avatar size="lg" name="Event logo" src={event?.eventLogo} />
                 <Box ml={5}>
                   <Flex>
-                    <Text backgroundColor={'#f2f2f2'} fontSize={14} px={2} py={1}>
+                    <Text backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')} fontSize={14} px={2} py={1}>
                       {event?.type}
                     </Text>
                     <Text ml={4}>{formatTimestamp(new Date(event?.expireTime as number).getTime())}</Text>
@@ -360,7 +362,12 @@ const Event = () => {
                 </Box>
               </Flex>
               <Flex>
-                <IconButton icon={<CiStar />} aria-label="collect" mr={2} isDisabled={userAddress === "" ? true : false} />
+                <IconButton
+                  icon={<CiStar />}
+                  aria-label="collect"
+                  mr={2}
+                  isDisabled={userAddress === '' ? true : false}
+                />
                 <IconButton
                   icon={<FaLink />}
                   aria-label="link"
@@ -446,7 +453,7 @@ const Event = () => {
                 justifyContent="space-between"
               >
                 <Flex>
-                  <Circle size={10} borderWidth={1} backgroundColor="#f2f2f2">
+                  <Circle size={10} borderWidth={1} backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}>
                     <FaHammer size={20} />
                   </Circle>
                   <Box ml={4}>
@@ -488,14 +495,12 @@ const Event = () => {
                             handleClickPostComment();
                           }}
                           text={'Post'}
-                          isDisabled={userAddress === "" ? true : false}
+                          isDisabled={userAddress === '' ? true : false}
                         />
                       </InputRightElement>
                     </InputGroup>
                     <Flex alignItems={'center'} mt={5}>
-                      <Text fontSize={16} color={'#828282'}>
-                        Sort by
-                      </Text>
+                      <Text fontSize={16}>Sort by</Text>
                       <Select width={150} ml={3}>
                         <option value="option1">Newwest</option>
                         <option value="option2">Likes</option>
@@ -515,9 +520,14 @@ const Event = () => {
                             ownLikeStatus={item.ownLikeStatus}
                             commentId={item.commentId}
                             init={init}
-                            isDisabled={userAddress === "" ? true : false}
+                            isDisabled={userAddress === '' ? true : false}
                           />
                         ))}
+                      {eventComment.length === 0 && (
+                        <Flex justifyContent={'center'}>
+                          <Text> No found any comments</Text>
+                        </Flex>
+                      )}
                     </Grid>
                   </TabPanel>
                   {/* <TabPanel px={0} pt={0}>
@@ -819,13 +829,25 @@ const Event = () => {
                             <Flex alignItems={'center'}>
                               {currentOrderStatus === EventOrderStringType.buy ? (
                                 <>
-                                  <Text backgroundColor={'#f2f2f2'} borderRadius={10} px={2} mr={2} fontSize={14}>
+                                  <Text
+                                    backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}
+                                    borderRadius={10}
+                                    px={2}
+                                    mr={2}
+                                    fontSize={14}
+                                  >
                                     Balance {usdtBalance}
                                   </Text>
                                 </>
                               ) : (
                                 <>
-                                  <Text backgroundColor={'#f2f2f2'} borderRadius={10} px={2} mr={2} fontSize={14}>
+                                  <Text
+                                    backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}
+                                    borderRadius={10}
+                                    px={2}
+                                    mr={2}
+                                    fontSize={14}
+                                  >
                                     You already hold {currentEventPlay?.orders[0].amount}
                                   </Text>
                                 </>
@@ -905,33 +927,25 @@ const Event = () => {
 
                           <Box mt={6}>
                             <Flex justifyContent={'space-between'}>
-                              <Text fontSize={14} color={'#828282'}>
-                                Avg price
-                              </Text>
+                              <Text fontSize={14}>Avg price</Text>
                               <Text>
                                 {eventPlay?.guessNumber} {eventPlay?.coin}
                               </Text>
                             </Flex>
                             <Flex justifyContent={'space-between'}>
-                              <Text fontSize={14} color={'#828282'}>
-                                Minimum Capital Pool
-                              </Text>
+                              <Text fontSize={14}>Minimum Capital Pool</Text>
                               <Text>
                                 {eventPlay?.minimumCapitalPool} {eventPlay?.coin}
                               </Text>
                             </Flex>
                             <Flex justifyContent={'space-between'}>
-                              <Text fontSize={14} color={'#828282'}>
-                                Maximum Capital Pool
-                              </Text>
+                              <Text fontSize={14}>Maximum Capital Pool</Text>
                               <Text>
                                 {eventPlay?.maximumCapitalPool} {eventPlay?.coin}
                               </Text>
                             </Flex>
                             <Flex justifyContent={'space-between'}>
-                              <Text fontSize={14} color={'#828282'}>
-                                Pledge amount
-                              </Text>
+                              <Text fontSize={14}>Pledge amount</Text>
                               <Text>
                                 {eventPlay?.pledgeAmount} {eventPlay?.coin}
                               </Text>

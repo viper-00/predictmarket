@@ -31,12 +31,11 @@ import {
 } from '@chakra-ui/react';
 import MetaTags from 'components/Common/MetaTags';
 import HomeNav from 'components/Navbar/HomeNav';
-import { IoLogoUsd } from 'react-icons/io';
 import { FaQrcode } from 'react-icons/fa';
 import { RiVisaLine } from 'react-icons/ri';
 import { IoChatboxEllipsesOutline } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
-import { getUserAuthorization, getUserContractAddress } from 'lib/store/user';
+import { getUserContractAddress } from 'lib/store/user';
 import USDT from '../../assets/coin/usdt.png';
 import ETH from '../../assets/coin/eth.png';
 import USDC from '../../assets/coin/usdc.png';
@@ -46,7 +45,6 @@ import { LuRefreshCw } from 'react-icons/lu';
 import { IoMdMore } from 'react-icons/io';
 import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
-import { UserCoinBalance } from 'packages/types';
 import { OP_SCAN_LINK } from 'packages/constants';
 import { getEthBalance, getTotalBalance, getUsdcBalance, getUsdtBalance } from 'lib/store/balance';
 import CustomButton from 'components/Button/CustomButton';
@@ -190,7 +188,7 @@ const Wallet = () => {
           <GridItem colSpan={2}>
             <Box borderWidth={1} borderRadius={10} p={5}>
               <Flex>
-                <Text backgroundColor={'#2b6cb0'} color={'#fff'} fontSize={12} fontWeight="bold" px={1}>
+                <Text backgroundColor={useColorModeValue('#2b6cb0', '#2c3f4f')} color={'#fff'} fontSize={12} fontWeight="bold" px={1}>
                   EASIEST METHOD
                 </Text>
                 <Text ml={5} fontSize={14}>
@@ -210,7 +208,7 @@ const Wallet = () => {
                 </Circle>
               </Flex>
               <Flex mt={5} alignItems={'center'}>
-                <Circle size={8} bg="#2e5cff1a" color="black">
+                <Circle size={8} backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}>
                   <Text>1</Text>
                 </Circle>
                 <Text fontSize={'14'} ml={2}>
@@ -218,7 +216,7 @@ const Wallet = () => {
                 </Text>
               </Flex>
               <Flex mt={5} alignItems={'center'}>
-                <Circle size={8} bg="#2e5cff1a" color="black">
+                <Circle size={8} backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}>
                   <Text>2</Text>
                 </Circle>
                 <Flex>
@@ -230,7 +228,7 @@ const Wallet = () => {
               <Flex mt={5}>
                 <Flex
                   width={'100%'}
-                  backgroundColor={'#f2f2f2'}
+                  backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}
                   borderRadius={10}
                   justifyContent={'space-between'}
                   alignItems={'center'}
@@ -274,12 +272,12 @@ const Wallet = () => {
 
             <Box position="relative" py={8}>
               <Divider />
-              <AbsoluteCenter bg="white" px="4">
+              <AbsoluteCenter backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')} px="4">
                 OTHER METHODS
               </AbsoluteCenter>
             </Box>
 
-            <Box backgroundColor={'#eef1f5'} p={3} borderRadius={10}>
+            <Box backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')} p={3} borderRadius={10}>
               <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Flex alignItems={'center'}>
                   <Text fontWeight={'bold'} fontSize={16}>
@@ -312,7 +310,7 @@ const Wallet = () => {
                     <Image alt="coin" src={ETH} width={30} height={30} />
                   </Circle>
                   <Text mt={2} fontWeight={'bold'}>
-                    ETH
+                    ETH(OP)
                   </Text>
                 </Flex>
                 {contractAddress !== '' && !IS_MAINNET && (
@@ -417,30 +415,32 @@ const Wallet = () => {
                   </Menu>
                 </Flex>
               </Flex>
-              <Flex mt={2}>
-                <Box>
-                  <Text fontWeight={'bold'} fontSize={20}>
-                    (ETH)
-                  </Text>
-                  <Text fontWeight={'bold'} fontSize={20}>
-                    (USDT)
-                  </Text>
-                  <Text fontWeight={'bold'} fontSize={20}>
-                    (USDC)
-                  </Text>
-                </Box>
-                <Box ml={2}>
-                  <Text fontWeight={'bold'} fontSize={20}>
+              <Box mt={2}>
+                <Flex alignItems={'center'}>
+                  <Circle size={10} color="white" borderWidth={1}>
+                    <Image alt="coin" src={ETH} width={30} height={30} />
+                  </Circle>
+                  <Text fontWeight={'bold'} fontSize={20} ml={2}>
                     {ethBalance}
                   </Text>
-                  <Text fontWeight={'bold'} fontSize={20}>
+                </Flex>
+                <Flex alignItems={'center'} mt={3}>
+                  <Circle size={10} color="white" borderWidth={1}>
+                    <Image alt="coin" src={USDT} width={30} height={30} />
+                  </Circle>
+                  <Text fontWeight={'bold'} fontSize={20} ml={2}>
                     {usdtBalance}
                   </Text>
-                  <Text fontWeight={'bold'} fontSize={20}>
+                </Flex>
+                <Flex alignItems={'center'}  mt={3}>
+                  <Circle size={10} color="white" borderWidth={1}>
+                    <Image alt="coin" src={USDC} width={30} height={30} />
+                  </Circle>
+                  <Text fontWeight={'bold'} fontSize={20} ml={2}>
                     {usdcBalance}
                   </Text>
-                </Box>
-              </Flex>
+                </Flex>
+              </Box>
             </Box>
             <Box mt={5}>
               <CustomButton

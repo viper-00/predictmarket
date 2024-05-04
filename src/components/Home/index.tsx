@@ -6,8 +6,12 @@ import HomeFooter from './HomeFooter';
 import RecentActivity from './RecentActivity';
 import { IS_MAINNET } from '../../packages/constants/general';
 import TestnetAlert from './TestnetAlert';
+import { useEffect, useState } from 'react';
+import { getUserContractAddress } from 'lib/store/user';
 
 const Home = () => {
+  const [contractAddress, setContractAddress] = useState<string>('');
+  
   // const wallet = hydrateWallet();
 
   // useEffect(() => {
@@ -45,12 +49,17 @@ const Home = () => {
   //     }
   //   }
   // };
+
+  useEffect(() => {
+    setContractAddress(getUserContractAddress());
+  }, [])
+
   return (
     <Box minW={'100%'} backgroundColor={useColorModeValue('white', 'gray.800')}>
       <MetaTags title="Home" />
       <HomeNav />
       <Container maxWidth={{ base: '99%', md: '95%', lg: '90%' }}>
-        {!IS_MAINNET && (
+        {contractAddress !== "" && !IS_MAINNET && (
           <Box mt={10}>
             <TestnetAlert />
           </Box>
