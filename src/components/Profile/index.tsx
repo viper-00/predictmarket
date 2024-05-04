@@ -44,7 +44,7 @@ const Profile = () => {
   const [comments, setComments] = useState<EventComment[]>([]);
   const [contractAddress, setContractAddress] = useState<string>('');
 
-  const contractBgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
+  const generalBgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
 
   const toast = useToast();
 
@@ -156,7 +156,7 @@ const Profile = () => {
                 <Heading>{userProfile?.username}</Heading>
                 <Flex mt={5}>
                   <Text
-                    background={contractBgColor}
+                    background={generalBgColor}
                     px={4}
                     borderRadius={10}
                     height={6}
@@ -251,7 +251,7 @@ const Profile = () => {
                         px={1}
                         py={3}
                         _hover={{
-                          backgroundColor: useColorModeValue('#f2f2f2', '#2c3f4f'),
+                          backgroundColor: generalBgColor,
                         }}
                         borderBottomWidth={1}
                       >
@@ -262,7 +262,7 @@ const Profile = () => {
                               mt={1}
                               fontSize={14}
                               color={'#808080'}
-                              background={contractBgColor}
+                              background={generalBgColor}
                               px={4}
                               borderRadius={10}
                             >
@@ -295,7 +295,7 @@ const Profile = () => {
                         px={1}
                         py={3}
                         _hover={{
-                          backgroundColor: useColorModeValue('#f2f2f2', '#2c3f4f'),
+                          backgroundColor: generalBgColor,
                         }}
                         borderBottomWidth={1}
                       >
@@ -304,7 +304,7 @@ const Profile = () => {
                             mt={1}
                             fontSize={14}
                             color={'#808080'}
-                            background={contractBgColor}
+                            background={generalBgColor}
                             px={4}
                             borderRadius={10}
                             fontWeight={'bold'}

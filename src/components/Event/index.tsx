@@ -106,6 +106,8 @@ const Event = () => {
   const [currentOrigin, setCurrentOrigin] = useState<string>('');
   const [comment, setComment] = useState<string>('');
 
+  const generalBgColor = useColorModeValue('#f2f2f2', '#2c3f4f');
+
   const onChangeComment = (event: any) => {
     setComment(event.target.value);
   };
@@ -829,25 +831,13 @@ const Event = () => {
                             <Flex alignItems={'center'}>
                               {currentOrderStatus === EventOrderStringType.buy ? (
                                 <>
-                                  <Text
-                                    backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}
-                                    borderRadius={10}
-                                    px={2}
-                                    mr={2}
-                                    fontSize={14}
-                                  >
+                                  <Text backgroundColor={generalBgColor} borderRadius={10} px={2} mr={2} fontSize={14}>
                                     Balance {usdtBalance}
                                   </Text>
                                 </>
                               ) : (
                                 <>
-                                  <Text
-                                    backgroundColor={useColorModeValue('#f2f2f2', '#2c3f4f')}
-                                    borderRadius={10}
-                                    px={2}
-                                    mr={2}
-                                    fontSize={14}
-                                  >
+                                  <Text backgroundColor={generalBgColor} borderRadius={10} px={2} mr={2} fontSize={14}>
                                     You already hold {currentEventPlay?.orders[0].amount}
                                   </Text>
                                 </>
