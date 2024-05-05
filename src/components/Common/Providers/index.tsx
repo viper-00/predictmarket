@@ -1,30 +1,30 @@
-// import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic';
 import { ReactNode } from 'react';
 import ErrorBoundary from '../ErrorBoundary';
 import { extendTheme } from '@chakra-ui/react';
 import { ChakraProvider } from '@chakra-ui/react';
 
-// const Web3Provider = dynamic(() => import('./Web3Provider'));
+const Web3Provider = dynamic(() => import('./Web3Provider'));
 
-const config = {
+const ChakraConfig = {
   initialColorMode: 'light',
   useSystemColorMode: true,
 };
 
-const theme = extendTheme({ config });
+const theme = extendTheme({ ChakraConfig });
 /*  */
 const Providers = ({ children }: { children: ReactNode }) => {
   return (
     <ErrorBoundary>
-      {/* <Web3Provider> */}
-      <ChakraProvider resetCSS theme={theme}>
-        {/* <WagmiConfig config={client}> */}
-        {/* <SessionProvider session={pageProps.session} refetchInterval={0}> */}
-        {children}
-        {/* </SessionProvider> */}
-        {/* </WagmiConfig> */}
-      </ChakraProvider>
-      {/* </Web3Provider> */}
+      <Web3Provider>
+        <ChakraProvider resetCSS theme={theme}>
+          {/* <WagmiConfig config={client}> */}
+          {/* <SessionProvider session={pageProps.session} refetchInterval={0}> */}
+          {children}
+          {/* </SessionProvider> */}
+          {/* </WagmiConfig> */}
+        </ChakraProvider>
+      </Web3Provider>
     </ErrorBoundary>
   );
 };

@@ -6,10 +6,8 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Box,
-  Button,
   Flex,
   Grid,
-  IconButton,
   Input,
   Link,
   Text,
@@ -26,6 +24,10 @@ import MetamaskSvg from 'assets/images/metamask.svg';
 import CoinbaseSvg from 'assets/images/coinbase.svg';
 import WalletconnectSvg from 'assets/images/walletconnect.svg';
 import Image from 'next/image';
+import CustomIconButton from 'components/Button/CustomIconButton';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
+import { checkAddress } from 'utils/address';
 
 type Props = {
   isOpen: boolean;
@@ -37,6 +39,12 @@ const SignupDialog = (props: Props) => {
   const cancelRef = React.useRef<HTMLButtonElement>(null);
   const toast = useToast();
   const [email, setEmail] = useState<string>('');
+
+  const { connectAsync } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { isConnected } = useAccount();
+  const { disconnectAsync } = useDisconnect();
 
   const handleEmailChange = (event: any) => {
     setEmail(event.target.value);
@@ -74,6 +82,71 @@ const SignupDialog = (props: Props) => {
         toast({
           position: 'top',
           title: `The certification email has been sent successfully, please go to your mailbox to check`,
+          status: 'success',
+          isClosable: true,
+        });
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        position: 'top',
+        title: e.message,
+        status: 'error',
+        isClosable: true,
+      });
+    }
+  };
+
+  const onClickMetamask = async () => {
+    if (isConnected) {
+      await disconnectAsync();
+    }
+
+    try {
+      const { account, chain } = await connectAsync({ chainId: DEFAULT_CHAIN_ID });
+
+      if (!chain.unsupported) {
+        toast({
+          position: 'top',
+          title: 'The network is not supported, please switch to the correct network',
+          status: 'error',
+          isClosable: true,
+        });
+        return;
+      }
+
+      if (!checkAddress(account)) {
+        toast({
+          position: 'top',
+          title: 'The address is not supported, please switch to the valid address',
+          status: 'error',
+          isClosable: true,
+        });
+        return;
+      }
+
+      if (chain.id !== DEFAULT_CHAIN_ID) {
+        toast({
+          position: 'top',
+          title: 'The network is not supported, please switch to the correct network',
+          status: 'error',
+          isClosable: true,
+        });
+        return;
+      }
+
+      console.log('chain', chain.id, account);
+
+      const response: any = await axios.post(Http.userRegister, {
+        chain_id: chain.id,
+        address: account,
+      });
+
+      if (response.code === 10200 && response.result) {
+        props.onClose();
+        toast({
+          position: 'top',
+          title: `The wallet address has been registered successfully, please log in directly`,
           status: 'success',
           isClosable: true,
         });
@@ -129,26 +202,24 @@ const SignupDialog = (props: Props) => {
               OR
             </Text>
             <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-              <IconButton
+              <CustomIconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
-                fontSize="20px"
                 icon={<Image src={MetamaskSvg} alt="metamask" width={30} height={30} />}
+                onClick={onClickMetamask}
               />
-              <IconButton
+              <CustomIconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
-                fontSize="20px"
                 icon={<Image src={CoinbaseSvg} alt="coinbase" width={30} height={30} />}
                 isDisabled={true}
               />
-              <IconButton
+              <CustomIconButton
                 variant="outline"
                 colorScheme="teal"
                 aria-label="Call Sage"
-                fontSize="20px"
                 icon={<Image src={WalletconnectSvg} alt="walletconnect" width={30} height={30} />}
                 isDisabled={true}
               />

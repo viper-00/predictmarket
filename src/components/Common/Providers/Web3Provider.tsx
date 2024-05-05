@@ -5,10 +5,10 @@ import { WalletConnectConnector } from '@wagmi/connectors/walletConnect';
 import { type FC, type ReactNode } from 'react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { base, mainnet, optimism, polygon, zora } from 'wagmi/chains';
+import { optimism, optimismSepolia } from 'wagmi/chains';
 import { PRED_APP_NAME, WC_PROJECT_ID } from 'packages/constants';
 
-const { chains, publicClient } = configureChains([polygon, mainnet, zora, optimism, base], [publicProvider()]);
+const { chains, publicClient } = configureChains([optimismSepolia], [publicProvider()]);
 
 const connectors: any = [
   new InjectedConnector({ chains, options: { shimDisconnect: true } }),
