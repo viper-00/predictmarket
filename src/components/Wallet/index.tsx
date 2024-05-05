@@ -188,7 +188,13 @@ const Wallet = () => {
           <GridItem colSpan={2}>
             <Box borderWidth={1} borderRadius={10} p={5}>
               <Flex>
-                <Text backgroundColor={useColorModeValue('#2b6cb0', '#2c3f4f')} color={'#fff'} fontSize={12} fontWeight="bold" px={1}>
+                <Text
+                  backgroundColor={useColorModeValue('#2b6cb0', '#2c3f4f')}
+                  color={'#fff'}
+                  fontSize={12}
+                  fontWeight="bold"
+                  px={1}
+                >
                   EASIEST METHOD
                 </Text>
                 <Text ml={5} fontSize={14}>
@@ -284,21 +290,14 @@ const Wallet = () => {
                     No crypto?
                   </Text>
                   <Box ml={2}>
-                    <CustomButton colorScheme="blue" size={'sm'} text={'Buy USDC/USDT'} />
-                  </Box>
-                </Flex>
-                <Flex>
-                  <Box mr={5}>
-                    <RiVisaLine size={40} />
-                  </Box>
-                  <Box mr={5}>
-                    <RiVisaLine size={40} />
-                  </Box>
-                  <Box mr={5}>
-                    <RiVisaLine size={40} />
-                  </Box>
-                  <Box>
-                    <RiVisaLine size={40} />
+                    <CustomButton
+                      colorScheme="blue"
+                      size={'sm'}
+                      text={'Buy USDC/USDT'}
+                      onClick={async () => {
+                        window.location.href = 'https://www.moonpay.com/';
+                      }}
+                    />
                   </Box>
                 </Flex>
               </Flex>
@@ -432,7 +431,7 @@ const Wallet = () => {
                     {usdtBalance}
                   </Text>
                 </Flex>
-                <Flex alignItems={'center'}  mt={3}>
+                <Flex alignItems={'center'} mt={3}>
                   <Circle size={10} color="white" borderWidth={1}>
                     <Image alt="coin" src={USDC} width={30} height={30} />
                   </Circle>
@@ -455,20 +454,25 @@ const Wallet = () => {
             <Box borderWidth={1} borderRadius={10} p={5} mt={5}>
               <Text fontSize={'14'}>TUTORIALS</Text>
               <Box mt={2}>
-                <Link href="">
-                  <Text fontSize={16}>Coinbase</Text>
+                <Link href="https://metamask.io/">
+                  <Text fontSize={14} mt={1} fontWeight={'bold'}>
+                    Metamask
+                  </Text>
                 </Link>
-                <Link href="">
-                  <Text fontSize={16}>Robinhood</Text>
+                <Link href="https://www.coinbase.com/">
+                  <Text fontSize={14} mt={1} fontWeight={'bold'}>
+                    Coinbase
+                  </Text>
                 </Link>
-                <Link href="">
-                  <Text fontSize={16}>Paypal</Text>
+                <Link href="https://www.binance.com">
+                  <Text fontSize={14} mt={1} fontWeight={'bold'}>
+                    Binance
+                  </Text>
                 </Link>
-                <Link href="">
-                  <Text fontSize={16}>ETH</Text>
-                </Link>
-                <Link href="">
-                  <Text>I dont have any crypto</Text>
+                <Link href="https://www.okx.com">
+                  <Text fontSize={14} mt={1} fontWeight={'bold'}>
+                    OKX
+                  </Text>
                 </Link>
               </Box>
             </Box>

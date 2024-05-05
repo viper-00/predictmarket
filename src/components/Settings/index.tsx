@@ -28,6 +28,7 @@ import axios from 'packages/core/http/axios';
 import { Http } from 'packages/core/http/http';
 import { UserNotificationSetting, UserProfile } from 'packages/types';
 import CustomButton from 'components/Button/CustomButton';
+import { setUserAvatarUrl, setUserBio, setUsername } from 'lib/store/user';
 
 const Settings = () => {
   const toast = useToast();
@@ -144,6 +145,18 @@ const Settings = () => {
       if (response.code === 10200 && response.result) {
         init();
 
+        if (profile?.username) {
+          setUsername(profile?.username);
+        }
+
+        if (profile?.bio) {
+          setUserBio(profile?.bio);
+        }
+
+        if (profile?.avatarUrl) {
+          setUserAvatarUrl(profile?.avatarUrl);
+        }
+
         toast({
           position: 'top',
           title: `Update completed`,
@@ -199,7 +212,11 @@ const Settings = () => {
                 </Flex>
                 <Box mt={5}>
                   <Text fontWeight={'bold'}>Email</Text>
-                  <Text>{profile?.email}</Text>
+                  {profile?.email ? (
+                    <Text>{profile?.email}</Text>
+                  ) : (
+                    <Text>You haven't set the email address yet</Text>
+                  )}
                 </Box>
                 <Box mt={5}>
                   <Text fontWeight={'bold'}>Username</Text>
