@@ -215,7 +215,7 @@ const Settings = () => {
                   {profile?.email ? (
                     <Text>{profile?.email}</Text>
                   ) : (
-                    <Text>You haven't set the email address yet</Text>
+                    <Text>You haven&apos;t set the email address yet</Text>
                   )}
                 </Box>
                 <Box mt={5}>

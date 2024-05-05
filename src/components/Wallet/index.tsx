@@ -246,7 +246,7 @@ const Wallet = () => {
 
                       toast({
                         position: 'top',
-                        title: `Copied successfully`,
+                        title: "Copied successfully",
                         status: 'success',
                         isClosable: true,
                       });
@@ -266,7 +266,7 @@ const Wallet = () => {
                       await navigator.clipboard.writeText(contractAddress);
                       toast({
                         position: 'top',
-                        title: `Copied successfully`,
+                        title: "Copied successfully",
                         status: 'success',
                         isClosable: true,
                       });
@@ -454,12 +454,12 @@ const Wallet = () => {
             <Box borderWidth={1} borderRadius={10} p={5} mt={5}>
               <Text fontSize={'14'}>TUTORIALS</Text>
               <Box mt={2}>
-                <Link href="https://metamask.io/">
+                <Link href="https://metamask.io">
                   <Text fontSize={14} mt={1} fontWeight={'bold'}>
                     Metamask
                   </Text>
                 </Link>
-                <Link href="https://www.coinbase.com/">
+                <Link href="https://www.coinbase.com">
                   <Text fontSize={14} mt={1} fontWeight={'bold'}>
                     Coinbase
                   </Text>
